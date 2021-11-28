@@ -1,0 +1,86 @@
+```javascript
+// Generate a random date between now and a maximum number of milliseconds from now
+fakeDateAfterNow(maxMillisFromNow)
+
+// Generate a random date between a maximum number of milliseconds before now and now
+fakeDateBeforeNow(maxMillisBeforeNow)
+
+// Generate a whole number up to a maximum number of digits (any more than 15 are ignored)
+fakeNumber(numberOfDigits)
+
+// Generate a while number between a given minimum and maximum number (inclusive)
+fakeNumberBounded(minNumber, maxNumber)
+
+// Generate a text representation of whole number a specific number of digits (characters) in length
+fakePaddedNumberAsText(numberOfDigits)
+
+// Generate a decimal number between 0.0 and 1.0 with up to 16 decimal places
+fakeDecimal()
+
+// Generate a decimal number with up to a specified number of significant places (e.g. '3' places -> 736.274473638742)
+fakeDecimalSignificantPlaces(maxSignificantPlaces)
+
+// Generate a True or False value randomly
+fakeBoolean()
+
+// Generate a True or False value randomly but where True is likely for a specified percentage of invocations (e.g. 40 -> 40% likely to be True)
+fakeBooleanWeighted(targetAvgPercentTrue)
+
+// Randomly return one value from a provided list
+fakeValueFromList(listOfValues)
+
+// Randomly return one value from a provided list but where values later in the list are more likely to be returned on average
+fakeValueFromListWeighted(listOfValues)
+
+// Generate an array of sub-documents with the specified size, where each item is randomly taken from the input list
+fakeListOfSubDocs(numSumDocs, listOfValues)
+
+// Generate string composed of the same character repeated the specified number of times 
+fakeNChars(char, amount)
+
+// Generate a typical first name from an internal pre-defined list of common first names
+fakeFirstName()
+
+// FAKE DATA:Generate a typical last name from an internal pre-defined list of common last names
+fakeLastName()
+
+// Generate a typical street name from an internal pre-defined list of common street names
+fakeStreetName()
+
+// Generate a typical town name from an internal pre-defined list of common town names
+fakeTownName()
+
+// Randomly return the name of one of the countries in the world
+fakeCountryName()
+
+// Generate a random US-style zipcode/postcode (e.g. 10144)
+fakeZipCode()
+
+// Replace the first specified number of characters in a field's value with 'x's
+maskReplaceFirstPart(strOrNum, amount)
+
+// Replace the last specified number of characters in a field's value with 'x's
+maskReplaceLastPart(strOrNum, amount)
+
+// Replace all the characters in a field's value with 'x's
+maskReplaceAll(strOrNum)
+
+// Change the value of a decimal number by adding or taking away a random amount up to a maximum percentage of its current value (e.g. change current value by + or - 10%)
+maskAlterDecimal(currentValue, percent)
+
+// Change the value of a whole number by adding or taking away a random amount up to a maximum percentage of its current value, rounded (e.g. change current value by + or - 10%)
+maskAlterNumber(currentValue, percent)
+
+// Change the value of a datetime by adding or taking away a random amount up to a maximum percentage of its current value (e.g. change current value by + or - 10%)
+maskAlterDate(currentValue, maxChangeMillis)
+
+// Return the same boolean value for a given percentage of time (e.g 40%), and for the rest of the time return the opposite value
+maskAlterBoolean(currentValue, percentSameValue)
+
+// Return the same value for a given percentage of time (e.g 40%), and for the rest of the time return a random value from the given list
+maskAlterValueFromList(currentValue, percentSameValue, otherValuesList)
+
+// Change on average a given percentage of the list members values to a random value from the provided alternative list
+maskAlterListFromList(currentList, percentSameValues, otherValuesList)
+
+```
