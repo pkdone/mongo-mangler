@@ -221,13 +221,13 @@ mongosh --quiet "mongodb://localhost:27017"
 ```javascript
 load("lib/masksFakesGeneraters.js")  // Load the faking/masking library
 use test
-db.dummycollection.insertOne({}); // Create a dummy doc in a collection with just an '_id' field
+db.dummycollection.insertOne({})  // Create a dummy doc in a collection with just an '_id' field
 
 pipeline = [
     // A pipeline which will randomly generate surname and data of birth fields
     {"$set": {
         "lastname": fakeLastName(), 
-        "dateOfBirth": fakeDateBeforeNow(100*365*24*60*60*1000), // Up to 100 years ago
+        "dateOfBirth": fakeDateBeforeNow(100*365*24*60*60*1000),  // Up to 100 years ago
     }},
 ]
 
@@ -250,10 +250,10 @@ IMPORTANT: When defining the `pipeline` variable in the file, do not include any
 
 The [examples sub-folder](examples) contains two sample pipelines (one for _faking_ and one for _masking_) and also contains a test MongoDB Shell script and a test Python script, for you to test the example pipelines or your custom pipeline, before you use your pipeline file when running `mongo-mangler.py`.
 
-To test out the pipeline file when run as a part of a script with the MongoDB Shell, from a terminal, change directory to the [examples sub-folder](examples) and executed the provided test script `test-agg-mongosh.js` via `mongosh`. For example, to test the _fake example pipeline_ against a locally running MongoDB database, execute:
+To test the pipeline file when run as a part of a script with the MongoDB Shell, from a terminal, change directory to the [examples sub-folder](examples) and executed the provided test script `test-agg-mongosh.js` via `mongosh`. For example, to test the _fake example pipeline_ against a locally running MongoDB database, execute:
 
 ```console
-mongosh --quiet test-agg-mongosh.js
+mongosh --quiet 'mongodb://localhost:27017' test-agg-mongosh.js
 ```
 
 You can change the following constants in the `test-agg-mongosh.js` file to match your envuronment and specific pipeline file: `DO_FAKE_RATHER_THAN_MASK`, `DB`, `COLL`, `LIB_FILE`, `FAKE_AGG_FILE`, `MASK_AGG_FILE`.
