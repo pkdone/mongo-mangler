@@ -11,6 +11,8 @@ The _mongo-mangler_ tool allows you to optionally provide a custom MongoDB aggre
 
 ## Performance
 
+&nbsp;
+
 The _mongo-mangler_ tool is designed to generate/process a large amount of data in a short space of time. The following table illustrates some of the performance levels that can be achieved:
 
 | Number of Docs | Test Type                                  | Load Time (s) | Load Time (m)  | Average Processing Rate |
@@ -19,6 +21,8 @@ The _mongo-mangler_ tool is designed to generate/process a large amount of data 
 | 100 million    | Inflate from 1 to 100m by generating fakes | 565 secs      | ~ 9.5 mins     | 177k docs/sec           |
 | 100 million    | Transform 100M to 100m by masking          | 664 secs      | ~ 11 mins      | 150k docs/sec           |
 | 1 billion      | Inflate from 1 to 1b by duplication        | 3022 secs     | ~ 50 mins      | 331k docs/sec           |
+
+&nbsp;
 
 The test environment used to produce the outline results consisted of:
 
