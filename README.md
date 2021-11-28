@@ -212,7 +212,7 @@ _NOTE 2_: You can of course construct your own pipeline containing whatever aggr
 
 The [examples sub-folder](examples) contains example pipelines for faking and masking customer data. When you modify one of these pipelines or create a new pipeline, there is a handy way to test your pipeline changes before trying to use the pipeline with `mongo-mangler.py` for mass data processing.
 
-You define the pipeline in JavaScript even though `mongo-mangler.py` is actually written in Python. This makes it easy to first prototype your aggregation pipeline code using the MongoDB Shell `mongosh`. For example to prototype a new pipeline you might execute the following to start an interactive MongoDB Shell session and construct and run a custom MongoDB Aggregation pipeline which uses this project's _faking_ library:
+You define the pipeline in JavaScript even though `mongo-mangler.py` is actually written in Python. This makes it easy to first prototype your aggregation pipeline code using the MongoDB Shell `mongosh`. For example to prototype a new pipeline you might execute the following to start an interactive MongoDB Shell session and construct and then run a custom MongoDB Aggregation pipeline which uses this project's _faking_ library:
 
 ```console
 mongosh --quiet "mongodb://localhost:27017"
@@ -221,7 +221,7 @@ mongosh --quiet "mongodb://localhost:27017"
 ```javascript
 load("lib/masksFakesGeneraters.js")  // Load the faking/masking library
 use test
-db.dummycollection.insertOne({}); // Create one one dummy document in a collection with just an '_id' field
+db.dummycollection.insertOne({}); // Create a dummy doc in a collection with just an '_id' field
 
 pipeline = [
     // A pipeline which will randomly generate surname and data of birth fields
