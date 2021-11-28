@@ -19,7 +19,7 @@ The _mongo-mangler_ tool is designed to generate/process a large amount of data 
 | -------------- | ------------------------------------------ |-------------- | -------------- | ----------------------- |
 | 100 million    | Inflate from 1 to 100m by duplication      | 299 secs      | ~ 5 mins       | 335k docs/sec           |
 | 100 million    | Inflate from 1 to 100m by generating fakes | 565 secs      | ~ 9.5 mins     | 177k docs/sec           |
-| 100 million    | Transform 100M to 100m by masking          | 664 secs      | ~ 11 mins      | 150k docs/sec           |
+| 100 million    | Transform 100m to 100m by masking          | 664 secs      | ~ 11 mins      | 150k docs/sec           |
 | 1 billion      | Inflate from 1 to 1b by duplication        | 3022 secs     | ~ 50 mins      | 331k docs/sec           |
 
 &nbsp;
