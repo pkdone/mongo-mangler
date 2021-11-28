@@ -248,9 +248,9 @@ pipeline = [
 
 IMPORTANT: When defining the `pipeline` variable in the file, do not include any JavaScript variable qualifier such as `let`, `var` or `const`, because the pipeline code will be converted to Python on the fly by `mongo-mangler.py` tool. The tool has only limited `JavaScript-to-Python` conversion capabilities.
 
-The [examples](examples) sub-folder contains two sample pipelines (one for _faking_ and one for _masking_) and also contains a test MongoDB Shell script and a test Python script, for you to test the example pipelines or your custom pipeline, before you use your pipeline file when running `mongo-mangler.py`.
+The [examples sub-folder](examples) contains two sample pipelines (one for _faking_ and one for _masking_) and also contains a test MongoDB Shell script and a test Python script, for you to test the example pipelines or your custom pipeline, before you use your pipeline file when running `mongo-mangler.py`.
 
-To test out the pipeline file when run as a part of a script with the MongoDB Shell, from a terminal, change directory to the `examples` sub-folder and executed the provided test script `test-agg-mongosh.js` via `mongosh`. For example, to test the _fake example pipeline_ against a locally running MongoDB database, execute:
+To test out the pipeline file when run as a part of a script with the MongoDB Shell, from a terminal, change directory to the [examples sub-folder](examples) and executed the provided test script `test-agg-mongosh.js` via `mongosh`. For example, to test the _fake example pipeline_ against a locally running MongoDB database, execute:
 
 ```console
 mongosh --quiet test-agg-mongosh.js
@@ -261,7 +261,7 @@ You can change the following constants in the `test-agg-mongosh.js` file to matc
 
 ### Testing Your Custom Pipeline With A Python Script
 
-It is recommended to also test the same JavaScript pipeline file with the test Python script too, to ensure the JavaScript pipeline code has been translated correctly to Python on the fly. For example, to test the _fake example pipeline_ with the test Python script, from the same `examples` sub-folder, execute:
+It is recommended to also test the same JavaScript pipeline file with the test Python script too, to ensure the JavaScript pipeline code has been translated correctly to Python on the fly. For example, to test the _fake example pipeline_ with the test Python script, from the same [examples sub-folder](examples), execute:
 
 ```console
 ./test-agg-python.py
