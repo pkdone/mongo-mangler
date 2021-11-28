@@ -238,7 +238,7 @@ pipeline = [
 db.dummycollection.aggregate(pipeline)
 ```
 
-Note, optionally, if you have saved your pipeline variable, containing the aggregation pipeline code, to a file, you can [re-]load the file's pipeline into the interactive shell with a command like: `load("examples/pipeline_example_fake_payments.js")` before running `aggregate(pipeline)`.
+Note, optionally, if you have saved your pipeline variable, containing the aggregation pipeline code, to a file, you can [re-]load the file's pipeline into the interactive shell with a command similar to: `load("examples/pipeline_example_fake_payments.js")` before running `aggregate(pipeline)`.
 
 ### Testing Your Custom Pipeline With A MongoDB Shell Script
 
