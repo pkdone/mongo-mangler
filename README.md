@@ -175,7 +175,7 @@ Ensure you have a database with a collection, ideally containing many sample doc
 From the root folder of this project, execute the following to connect to a remote MongoDB cluster to copy and expand the data from an existing collection, `sample_mflix.movies`, to an a new collection, `testdb.big_collllection`, which will contain 10 million documents:
 
 ```console
-./mongo-mangler.py -m "mongodb+srv://myusr:mypwd@mcluster.abc1.mongodb.net/" -d 'sample_mflix' -c 'movies' -o 'testdb' -t 'big_collllection' -s 10000000
+./mongo-mangler.py -m "mongodb+srv://myusr:mypwd@mycluster.abc1.mongodb.net/" -d 'sample_mflix' -c 'movies' -o 'testdb' -t 'big_collllection' -s 10000000
 ```
 
 _NOTE_: Before running the above command, first change the URL's _username_, _password_, and _hostname_, to match the URL of your running MongoDB cluster, and if not using the Atlas _sample data set_, change the values for the source database and collection names.
@@ -187,7 +187,7 @@ No input collection is required, although one can be used, to provide some hard-
 To use the [example faking aggregation pipeline](examples/pipeline_example_fake_payments.js) provided in this project for generating random customer records data, execute the following to connect to a remote MongoDB cluster to generate a new collection, `testdb.big_collllection`, which will contain 10 million documents of fake data:
 
 ```console
-./mongo-mangler.py -m "mongodb+srv://myusr:mypwd@mcluster.abc1.mongodb.net/" -o 'testdb' -t 'big_collllection' -s 10000000 -p 'examples/pipeline_example_fake_payments.js'
+./mongo-mangler.py -m "mongodb+srv://myusr:mypwd@mycluster.abc1.mongodb.net/" -o 'testdb' -t 'big_collllection' -s 10000000 -p 'examples/pipeline_example_fake_payments.js'
 ```
 
 _NOTE 1_: Before running the above command, first change the URL's _username_, _password_, and _hostname_, to match the URL of your running MongoDB cluster.
@@ -202,7 +202,7 @@ Ensure you have a database with a collection containing the set of existing docu
 To use the [example masking aggregation pipeline](examples/pipeline_example_mask_payments.js) provided in this project for masking values in an existing customer records collection, execute the following to connect to a remote MongoDB cluster to generate a new collection, `testdb.big_collllection`, which will contain 10 million documents of fake data:
 
 ```console
-./mongo-mangler.py -m "mongodb+srv://myusr:mypwd@mcluster.abc1.mongodb.net/" -d 'testdb' -c 'big_collllection' -t 'masked_big_collllection' -s 10000000 -p 'examples/pipeline_example_mask_payments.js'
+./mongo-mangler.py -m "mongodb+srv://myusr:mypwd@mycluster.abc1.mongodb.net/" -d 'testdb' -c 'big_collllection' -t 'masked_big_collllection' -s 10000000 -p 'examples/pipeline_example_mask_payments.js'
 ```
 
 _NOTE 1_: Before running the above command, first change the URL's _username_, _password_, and _hostname_, to match the URL of your running MongoDB cluster, and if using a different source collection of real data, change the values for the source database and collection names.
