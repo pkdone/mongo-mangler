@@ -1,6 +1,6 @@
 # Mongo Mangler
 
-The _mongo-mangler_ tool is a lightweight Python utility, which you can run from a low-powered machine to execute a high throughput or transformation data ingestion workload against a remote MongoDB database (whether self-managed or in [Atlas](https://www.mongodb.com/cloud)). The utility can perform one, or a combination, of the following actions:
+The _mongo-mangler_ tool is a lightweight Python utility, which you can run from a low-powered machine to execute a high throughput data ingestion or transformation workload against a remote MongoDB database (whether self-managed or in [Atlas](https://www.mongodb.com/cloud)). The utility can perform one, or a combination, of the following actions:
 
 * __Data Expansion__. Inflate the contents of an existing collection to a new larger collection by duplicating its documents. For example, expand a data set of 1 thousand documents to one with 1 billion documents ready to be used for testing workloads at scale.
 * __Data Faking__. Generate a large set of documents from scratch, populating the fields of each document with randomly generated values according to a set of rules. For example, create a massive collection of documents representing fictitious customers with randomly generated personal details, ready to be used in a performance benchmark test.
