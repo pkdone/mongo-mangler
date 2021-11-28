@@ -6,7 +6,7 @@ The _mongo-mangler_ tool is a lightweight Python utility, which you can run from
 * __Data Faking__. Generate a large set of documents from scratch, populating the fields of each document with randomly generated values according to a set of rules. For example, create a massive collection of documents representing fictitious customers with randomly generated personal details, ready to be used in a performance benchmark test.
 * __Dask Masing__. Transform the contents of a set of documents into a new collection of similar documents but with some fields obfuscated. For example, mask every customer record's surname and birth date with the original values partly redacted and randomly adjusted, respectively, ready for the data set to be distributed to a 3rd party.
 
-The _mongo-mangler_ tool allows you to optionally provide a custom MongoDB aggregation pipeline. In this pipeline, you can define whatever data transformation logic you want. This project also provides a convenient library of functions representing common data faking and masking tasks which you can easily re-use from your custom pipeline.
+The _mongo-mangler_ tool allows you to optionally provide a custom MongoDB aggregation pipeline. In the pipeline, you can define whatever data transformation logic you want. This project also provides a convenient library of functions representing common data faking and masking tasks which you can easily re-use from your custom pipeline.
 
 
 ## Performance
@@ -24,7 +24,7 @@ The _mongo-mangler_ tool is designed to generate/process a large amount of data 
 
 &nbsp;
 
-The test environment used to produce the outline results consisted of:
+The test environment used to produce the outlined results consisted of:
 
  * __MongoDB version__:  5.0
  * __MongoDB deployment topology__:  A single unsharded replica set consisting of 3 replicas
