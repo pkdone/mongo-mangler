@@ -228,7 +228,7 @@ use test
 db.dummycollection.insertOne({})  // Create a dummy doc in a collection with just an '_id' field
 
 pipeline = [
-    // A pipeline which will randomly generate surname and data of birth fields
+    // A pipeline which will randomly generate surname and date of birth fields
     {"$set": {
         "lastname": fakeLastName(), 
         "dateOfBirth": fakeDateBeforeNow(100*365*24*60*60*1000),  // Up to 100 years ago
