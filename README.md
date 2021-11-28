@@ -12,6 +12,7 @@ The _mongo-mangler_ tool allows you to optionally provide a custom MongoDB aggre
 ## Performance
 
 &nbsp;
+&nbsp;
 
 The _mongo-mangler_ tool is designed to generate/process a large amount of data in a short space of time. The following table illustrates some of the performance levels that can be achieved:
 
