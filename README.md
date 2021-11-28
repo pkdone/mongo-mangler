@@ -45,7 +45,7 @@ The _mongo-mangler_ tool also provides a set of [library functions](lib/masksFak
 
 ### Faking Library
 
-The _[fake_payments](examples/pipeline_example_fake_payments.js)_ example pipeline provided in this project shows an example of how to generate fictitious bank account records using the supplied _faker_ library. Below is the list of _faking_ functions provided for use in your custom pipelines, with descriptions for each:
+The _[fake_payments](examples/pipeline_example_fake_payments.js)_ example pipeline provided in this project shows an example of how to generate fictitious bank account records using the supplied _faker_ library. Below is the list of _faking_ functions the library provides for use in your custom pipelines, with descriptions for each:
 
 ```javascript
 // Generate a random date between now and a maximum number of milliseconds from now
@@ -108,7 +108,7 @@ fakeZipCode()
 
 ### Masking Library
 
-The _[mask_payments](examples/pipeline_example_mask_payments.js)_ example pipeline provided in this project shows an example of how to transform the fictitious bank account records using the supplied _mask_ library. Below is the list of _masking_ functions provided for use in your custom pipelines, with descriptions for each:
+The _[mask_payments](examples/pipeline_example_mask_payments.js)_ example pipeline provided in this project shows an example of how to transform the fictitious bank account records using the supplied _mask_ library. Below is the list of _masking_ functions the library provides for use in your custom pipelines, with descriptions for each:
 
 ```javascript
 // Replace the first specified number of characters in a field's value with 'x's
