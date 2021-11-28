@@ -7,7 +7,7 @@ The _mongo-mangler_ tool is a lightweight Python utility, which you can run from
 * __Dask Masing__. Transform the contents of a set of documents into a new collection of similar documents but with some fields obfuscated. For example, mask every customer record's surname and birth date with the original values partly redacted and randomly adjusted, respectively, ready for the data set to be distributed to a 3rd party.
 
 The _mongo-mangler_ tool allows you to optionally provide a custom MongoDB aggregation pipeline. In this pipeline, you can define whatever data transformation logic you want. This project also provides a convenient library of functions representing common data faking and masking tasks which you can easily re-use from your custom pipeline.
-
+&nbsp;
 
 ## Performance
 
@@ -31,6 +31,7 @@ The test environment used to produce the outline results consisted of:
  * __Collection and ingestion specifics__:  0.45 kb average-sized documents, no secondary indexes defined, write concern of _1_ configured for the ingestion (merging) workload
  * __Host machine specification per replica__:  Linux VM, Intel Xeon processor, 16 cores, 64GB RAM, 3000 storage IOPS (non-provisioned), 500GB storage volume (i.e. an _Atlas M60_ tier in AWS)
  * __Client workstation specification__:  Just a regular laptop with low-bandwidth connectivity (essentially it will just be idling throughout the test run, mostly blocking to wait for responses to the aggregations it's issued against the database).
+&nbsp;
 
 
 ## How High Performance Is Achieved
@@ -41,6 +42,7 @@ The _mongo-mangler_ tool uses several tactics to maximise the rate of documents 
 * __Parallel Processing__. Divides up the task of copying and transforming input records into multiple batches, each executing an aggregation pipeline in a sub-process against a subset of data, in parallel.
 * __Temporary Intermediate Collections__. When copying data from a small collection (e.g, of a thousand records) to a new larger collection (e.g. to a billion records), uses temporary intermediate collections to _step up_ the data size (e.g. uses temporary collections for one hundred thousand records and for ten million records).
 * __Shard Key Pre-splitting__. When running against a sharded cluster, first _pre-splits_ the new target collection to contain an evenly balanced set of empty chunks. The tool supports both hash-based and range-based sharding. For range-based sharding, the tool first analyses the shape of data in the original source collection to determine the _split-points_ and uses this information to configure an empty target collection (even for a compound shard key).
+&nbsp;
 
 
 ## Customisability Library For Faking And Masking Data
@@ -144,6 +146,7 @@ maskAlterListFromList(currentList, percentSameValues, otherValuesList)
 ```
 
 Note, for data masking, even though the pipeline is irreversibly obfuscating fields, this doesn't mean that the masked data is useless for performing analytics to gain insight. A pipeline can mask most fields by fluctuating the original values by a small but limited random percentage (e.g. vary a credit card's expiry date or transaction amount by +/- 10%), rather than replacing them with completely random new values. In such cases, if the input data set is sufficiently large, then minor variances will be equaled out. For the fields that are only varied slightly, analysts can derive similar trends and patterns from analysing the masked data as they would the original data. See the _Mask Sensitive Fields_ chapter of the _[Practical MongoDB Aggregations](https://www.practical-mongodb-aggregations.com/)_ book for more information.
+&nbsp;
 
 
 ## How To Run
@@ -208,6 +211,7 @@ To use the [example masking aggregation pipeline](examples/pipeline_example_mask
 _NOTE 1_: Before running the above command, first change the URL's _username_, _password_, and _hostname_, to match the URL of your running MongoDB cluster, and if using a different source collection of real data, change the values for the source database and collection names.
 
 _NOTE 2_: You can of course construct your own pipeline containing whatever aggregation stages and operators you want and using whichever of the supplied masking library functions you require - in the above command change the name of the pipeline to reference the pipeline you've created. 
+&nbsp;
 
 
 ## Prototyping Your Custom Faked/Masked Aggregation Pipelines
