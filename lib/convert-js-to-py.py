@@ -45,7 +45,7 @@ with open(f"{LIBFILE}.js", mode="r") as jsFile, \
     importsFile.write(importLineText)
     print(f"Generated new file: '{importsFile.name}'")
 
-    # Generate an mardown snippet text file which lists the functions and their descriptions
+    # Generate a mardown snippet text file which lists the functions and their descriptions
     docsContent = ""
 
     for line in jsContent.splitlines():

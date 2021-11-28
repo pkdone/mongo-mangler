@@ -15,7 +15,7 @@ The _mongo-mangler_ tool is designed to generate/process a large amount of data 
 
 &nbsp;
 
-| Number of Docs | Test Type                                  | Load Time (s) | Load Time (m)  | Average Processing Rate |
+| Number of Docs | Test Type                                  | Exec Time (s) | Exec Time (m)  | Average Processing Rate |
 | -------------- | ------------------------------------------ |-------------- | -------------- | ----------------------- |
 | 100 million    | Inflate from 1 to 100m by duplication      | 299 secs      | ~ 5 mins       | 335k docs/sec           |
 | 100 million    | Inflate from 1 to 100m by generating fakes | 565 secs      | ~ 9.5 mins     | 177k docs/sec           |
@@ -150,7 +150,7 @@ Note, for data masking, even though the pipeline is irreversibly obfuscating fie
 
 ### Prerequisites
 
-Ensure you have a running MongoDB cluster (self-managed or running in Atlas) network accessible from your client workstation. 
+Ensure you have a running MongoDB cluster (self-managed or running in Atlas) which is network accessible from your client workstation. 
 
 On your client workstation, ensure you have Python 3 (version 3.8 or greater) and the MongoDB Python Driver ([PyMongo](https://docs.mongodb.com/drivers/pymongo/)) installed. Example to install _PyMongo_:
 
@@ -168,7 +168,7 @@ In a terminal, execute the following to view the tool's _help instructions_ and 
 ./mongo-mangler.py -h
 ```
 
-### Inflate Existing Collection Of Data To A Much Larger Collection
+### Inflate Existing Collection Of Data To A Far Larger Collection
 
 Ensure you have a database with a collection, ideally containing many sample documents with similar fields but varying values. This will enable a newly expanded collection to reflect the shape and variance of the source collection, albeit with duplicated records. As a handy example, if you are using [Atlas](https://www.mongodb.com/cloud), you can quickly load the [Atlas sample data set](https://docs.atlas.mongodb.com/sample-data/)) via the _Atlas Console_, which contains _movies_ data.
 
