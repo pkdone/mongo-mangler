@@ -219,7 +219,7 @@ The [examples sub-folder](examples) contains example pipelines for faking and ma
 You define the pipeline in JavaScript even though `mongo-mangler.py` is actually written in Python. This makes it easy to first prototype your aggregation pipeline code using the MongoDB Shell `mongosh`. For example to prototype a new pipeline you might execute the following to start an interactive MongoDB Shell session and construct and then run a custom MongoDB Aggregation pipeline which uses this project's _faking_ library:
 
 ```console
-mongosh --quiet "mongodb://localhost:27017"
+mongosh "mongodb://localhost:27017"
 ```
 
 ```javascript
