@@ -49,7 +49,7 @@ The _mongo-mangler_ tool also provides a set of [library functions](lib/masksFak
 
 ### Faking Library
 
-The _[fake_payments](examples/pipeline_example_fake_payments.js)_ example pipeline provided in this project shows an example of how to generate fictitious bank account records using the supplied _faker_ library. Below is the list of _faking_ functions the library provides for use in your custom pipelines, with descriptions for each:
+The _[fake_accounts](examples/pipeline_example_fake_accounts.js)_ example pipeline provided in this project shows an example of how to generate fictitious bank account records using the supplied _faker_ library. Below is the list of _faking_ functions the library provides for use in your custom pipelines, with descriptions for each:
 
 ```javascript
 // Generate a random date between now and a maximum number of milliseconds from now
@@ -112,7 +112,7 @@ fakeZipCode()
 
 ### Masking Library
 
-The _[mask_payments](examples/pipeline_example_mask_payments.js)_ example pipeline provided in this project shows an example of how to transform the fictitious bank account records using the supplied _mask_ library. Below is the list of _masking_ functions the library provides for use in your custom pipelines, with descriptions for each:
+The _[mask_accounts](examples/pipeline_example_mask_accounts.js)_ example pipeline provided in this project shows an example of how to transform the fictitious bank account records using the supplied _mask_ library. Below is the list of _masking_ functions the library provides for use in your custom pipelines, with descriptions for each:
 
 ```javascript
 // Replace the first specified number of characters in a field's value with 'x's
@@ -152,6 +152,8 @@ Note, for data masking, even though the pipeline is irreversibly obfuscating fie
 
 Ensure you have a running MongoDB cluster (self-managed or running in Atlas) which is network accessible from your client workstation. 
 
+Ensure you are connecting to the MongoDB cluster with a database user which has __read privileges for the source database and read + write privileges the target database__. If you are running a __Sharded cluster__, the database user must also have the __privileges to run the 'enablingSharding' and 'splitChunk' commands__. If this Sharded cluster is on Atlas, you would typically need to assign the 'Atlas Admin' role to the database user.
+
 On your client workstation, ensure you have Python 3 (version 3.8 or greater) and the MongoDB Python Driver ([PyMongo](https://docs.mongodb.com/drivers/pymongo/)) installed. Example to install _PyMongo_:
 
 ```console
@@ -172,22 +174,24 @@ In a terminal, execute the following to view the tool's _help instructions_ and 
 
 Ensure you have a database with a collection, ideally containing many sample documents with similar fields but varying values. This will enable a newly expanded collection to reflect the shape and variance of the source collection, albeit with duplicated records. As a handy example, if you are using [Atlas](https://www.mongodb.com/cloud), you can quickly load the [Atlas sample data set](https://docs.atlas.mongodb.com/sample-data/)) via the _Atlas Console_, which contains _movies_ data.
 
-From the root folder of this project, execute the following to connect to a remote MongoDB cluster to copy and expand the data from an existing collection, `sample_mflix.movies`, to an a new collection, `testdb.big_collllection`, which will contain 10 million documents:
+From the root folder of this project, execute the following to connect to a remote MongoDB cluster to copy and expand the data from an existing collection, `sample_mflix.movies`, to an a new collection, `testdb.big_collection`, which will contain 10 million documents:
 
 ```console
-./mongo-mangler.py -m "mongodb+srv://myusr:mypwd@mycluster.abc1.mongodb.net/" -d 'sample_mflix' -c 'movies' -o 'testdb' -t 'big_collllection' -s 10000000
+./mongo-mangler.py -m "mongodb+srv://myusr:mypwd@mycluster.abc1.mongodb.net/" -d 'sample_mflix' -c 'movies' -o 'testdb' -t 'big_collection' -s 10000000
 ```
 
-_NOTE_: Before running the above command, first change the URL's _username_, _password_, and _hostname_, to match the URL of your running MongoDB cluster, and if not using the Atlas _sample data set_, change the values for the source database and collection names.
+_NOTE 1_: Before running the above command, first change the URL's _username_, _password_, and _hostname_, to match the URL of your running MongoDB cluster, and if not using the Atlas _sample data set_, change the values for the source database and collection names.
+
+_NOTE 2_: If executing the command against a sharded cluster, by default a hash-based shard key will be configured based on the `_id` field. To use a range-based shard key, provide the `--shardkey` parameter in the caommand line, providing the name of the field to use as the shard key (or to specify a compound key, provide a string of comma separated field names, with no spaces between the field names).
 
 ### Generate A New Large Collection From Scratch With Fake Data
 
 No input collection is required, although one can be used, to provide some hard-coded document structure for every document generated.
 
-To use the [example faking aggregation pipeline](examples/pipeline_example_fake_payments.js) provided in this project for generating random customer records data, execute the following to connect to a remote MongoDB cluster to generate a new collection, `testdb.big_collllection`, which will contain 10 million documents of fake data:
+To use the [example faking aggregation pipeline](examples/pipeline_example_fake_accounts.js) provided in this project for generating random customer records data, execute the following to connect to a remote MongoDB cluster to generate a new collection, `testdb.big_collection`, which will contain 10 million documents of fake data:
 
 ```console
-./mongo-mangler.py -m "mongodb+srv://myusr:mypwd@mycluster.abc1.mongodb.net/" -o 'testdb' -t 'big_collllection' -s 10000000 -p 'examples/pipeline_example_fake_payments.js'
+./mongo-mangler.py -m "mongodb+srv://myusr:mypwd@mycluster.abc1.mongodb.net/" -o 'testdb' -t 'big_collection' -s 10000000 -p 'examples/pipeline_example_fake_accounts.js'
 ```
 
 _NOTE 1_: Before running the above command, first change the URL's _username_, _password_, and _hostname_, to match the URL of your running MongoDB cluster.
@@ -199,10 +203,10 @@ _NOTE 2_: You can of course construct your own pipeline containing whatever aggr
 
 Ensure you have a database with a collection containing the set of existing documents to be transformed. The example provided here will use the existing fake collection created in the previous step, but in a real situation, you would declare the source collection to one that contains real-world sensitive data.
 
-To use the [example masking aggregation pipeline](examples/pipeline_example_mask_payments.js) provided in this project for masking values in an existing customer records collection, execute the following to connect to a remote MongoDB cluster to generate a new collection, `testdb.big_collllection`, which will contain 10 million documents of fake data:
+To use the [example masking aggregation pipeline](examples/pipeline_example_mask_accounts.js) provided in this project for masking values in an existing customer records collection, execute the following to connect to a remote MongoDB cluster to generate a new collection, `testdb.big_collection`, which will contain 10 million documents of fake data:
 
 ```console
-./mongo-mangler.py -m "mongodb+srv://myusr:mypwd@mycluster.abc1.mongodb.net/" -d 'testdb' -c 'big_collllection' -t 'masked_big_collllection' -s 10000000 -p 'examples/pipeline_example_mask_payments.js'
+./mongo-mangler.py -m "mongodb+srv://myusr:mypwd@mycluster.abc1.mongodb.net/" -d 'testdb' -c 'big_collection' -t 'masked_big_collection' -s 10000000 -p 'examples/pipeline_example_mask_accounts.js'
 ```
 
 _NOTE 1_: Before running the above command, first change the URL's _username_, _password_, and _hostname_, to match the URL of your running MongoDB cluster, and if using a different source collection of real data, change the values for the source database and collection names.
@@ -216,7 +220,7 @@ _NOTE 2_: You can of course construct your own pipeline containing whatever aggr
 
 The [examples sub-folder](examples) contains example pipelines for faking and masking customer data. When you modify one of these pipelines or create a new pipeline, there is a handy way to test your pipeline changes before trying to use the pipeline with `mongo-mangler.py` for mass data processing.
 
-You define the pipeline in JavaScript even though `mongo-mangler.py` is actually written in Python. This makes it easy to first prototype your aggregation pipeline code using the MongoDB Shell `mongosh`. For example to prototype a new pipeline you might execute the following to start an interactive MongoDB Shell session and construct and then run a custom MongoDB Aggregation pipeline which uses this project's _faking_ library:
+You define the pipeline in JavaScript even though `mongo-mangler.py` is actually written in Python. This makes it easy to first prototype your aggregation pipeline code using the MongoDB Shell `mongosh`. For example to prototype a new pipeline you might execute the following from a terminal in the project's root folder to start an interactive MongoDB Shell session and construct and then run a custom MongoDB Aggregation pipeline which uses this project's _faking_ library:
 
 ```console
 mongosh "mongodb://localhost:27017"
@@ -238,7 +242,7 @@ pipeline = [
 db.dummycollection.aggregate(pipeline)
 ```
 
-Note, if you have saved to a file your pipeline variable containing the aggregation pipeline code, you can load the file's pipeline into the interactive shell with a command similar to: `load("examples/pipeline_example_fake_payments.js")` before running `aggregate(pipeline)`.
+Note, if you have saved to a file your pipeline variable containing the aggregation pipeline code (e.g. saved to to `my_test_pipeline.js` in the project's root folder), you can load the file's pipeline into the interactive shell with a command similar to: `load("my_test_pipeline.js")` before running `aggregate(pipeline)`.
 
 ### Testing Your Custom Pipeline With A MongoDB Shell Script
 

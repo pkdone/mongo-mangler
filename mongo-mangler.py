@@ -117,9 +117,23 @@ def run(url, srcDbName, srcCollName, tgtDbName, tgtCollName, size, compression, 
 
     # Try to enable sharding and if can't we know its just a simple replica-set
     try:
-        adminDB.command("enableSharding", srcDbName)
+        adminDB.command("enableSharding", tgtDbName)
         isClusterSharded = True
+    except OperationFailure as opFailure:
+        if opFailure.code == 13:  # '13' signifies 'authorization' error
+            print(f" WARNING: Cannot enable sharding for the database because the specified "
+                  f"database user does not have the 'clusterManager' built-in role assigned (or the"
+                  f" action privileges to run the 'enablingSharding' and 'splitChunk' commands). If"
+                  f" this is an Atlas cluster, you would typically need to assign the 'Atlas Admin'"
+                  f" role to the database user.")
+        elif opFailure.code != 59:  # '15' signifies 'no such command' error which is fine
+            print(f" WARNING: Unable to successfully enable sharding for the database. Error: "
+                  f"{opFailure.details}.")
+
+        isClusterSharded = False
     except Exception as e:
+        print(" WARNING: Unable to successfully enable sharding for the database. Error: ")
+        pprint(e)
         isClusterSharded = False
 
     rangeShardKeySplits = []

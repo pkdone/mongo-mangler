@@ -2,8 +2,8 @@
 const DO_FAKE_RATHER_THAN_MASK = true;
 const DB = "test";
 const COLL = "testdata";
-const FAKE_AGG_FILE = "pipeline_example_fake_payments.js";
-const MASK_AGG_FILE = "pipeline_example_mask_payments.js";
+const FAKE_AGG_FILE = "pipeline_example_fake_accounts.js";
+const MASK_AGG_FILE = "pipeline_example_mask_accounts.js";
 
 
 // Execution

@@ -11,8 +11,8 @@ URL = "mongodb://localhost:27017"
 DO_FAKE_RATHER_THAN_MASK = True
 DB = "test"
 COLL = "testdata"
-FAKE_AGG_FILE = "pipeline_example_fake_payments.js"
-MASK_AGG_FILE = "pipeline_example_mask_payments.js"
+FAKE_AGG_FILE = "pipeline_example_fake_accounts.js"
+MASK_AGG_FILE = "pipeline_example_mask_accounts.js"
 
 
 ##
