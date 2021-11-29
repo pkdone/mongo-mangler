@@ -150,17 +150,17 @@ Note, for data masking, even though the pipeline is irreversibly obfuscating fie
 
 ### Prerequisites
 
-Ensure you have a running MongoDB cluster (self-managed or running in Atlas) which is network accessible from your client workstation. 
+ 1. Ensure you have a running MongoDB cluster (self-managed or running in Atlas) which is network accessible from your client workstation. 
 
-Ensure you are connecting to the MongoDB cluster with a database user which has __read privileges for the source database and read + write privileges the target database__. If you are running a __Sharded cluster__, the database user must also have the __privileges to run the 'enablingSharding' and 'splitChunk' commands__. If this Sharded cluster is on Atlas, you would typically need to assign the 'Atlas Admin' role to the database user.
+ 2. Ensure you are connecting to the MongoDB cluster with a database user which has __read privileges for the source database and read + write privileges the target database__. If you are running a __Sharded cluster__, the database user must also have the __privileges to run the 'enablingSharding' and 'splitChunk' commands__. If this Sharded cluster is on Atlas, you would typically need to assign the 'Atlas Admin' role to the database user.
 
-On your client workstation, ensure you have Python 3 (version 3.8 or greater) and the MongoDB Python Driver ([PyMongo](https://docs.mongodb.com/drivers/pymongo/)) installed. Example to install _PyMongo_:
+ 3. On your client workstation, ensure you have Python 3 (version 3.8 or greater) and the MongoDB Python Driver ([PyMongo](https://docs.mongodb.com/drivers/pymongo/)) installed. Example to install _PyMongo_:
 
 ```console
 pip3 install --user pymongo
 ```
 
-Ensure the `mongo-mangler.py` file is executable on your host workstation.
+ 4. Ensure the `mongo-mangler.py` file is executable on your host workstation.
 
 ### Run With No Parameters To View Full Help Options
 
@@ -206,7 +206,7 @@ Ensure you have a database with a collection containing the set of existing docu
 To use the [example masking aggregation pipeline](examples/pipeline_example_mask_accounts.js) provided in this project for masking values in an existing customer records collection, execute the following to connect to a remote MongoDB cluster to generate a new collection, `testdb.big_collection`, which will contain 10 million documents of fake data:
 
 ```console
-./mongo-mangler.py -m "mongodb+srv://myusr:mypwd@mycluster.abc1.mongodb.net/" -d 'testdb' -c 'big_collection' -t 'masked_big_collection' -s 10000000 -p 'examples/pipeline_example_mask_accounts.js'
+./mongo-mangler.py -m "mongodb+srv://myusr:mypwd@mycluster.abc1.mongodb.net/" -d 'testdb' -c 'big_collection' -t 'masked_big_collection' -p 'examples/pipeline_example_mask_accounts.js'
 ```
 
 _NOTE 1_: Before running the above command, first change the URL's _username_, _password_, and _hostname_, to match the URL of your running MongoDB cluster, and if using a different source collection of real data, change the values for the source database and collection names.
