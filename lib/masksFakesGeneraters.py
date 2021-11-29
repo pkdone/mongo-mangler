@@ -37,7 +37,7 @@ def fakeNumberBounded(minNumber, maxNumber):
 
 
 
-# Generate a text representation of whole number a specific number of digits (characters) in length
+# Generate a text representation of whole number to a specific number of digits (characters) in length
 def fakePaddedNumberAsText(numberOfDigits):
     return {
         "$let": {
@@ -198,7 +198,7 @@ def fakeFirstName():
 
 
 
-# FAKE DATA:Generate a typical last name from an internal pre-defined list of common last names
+# Generate a typical last name from an internal pre-defined list of common last names
 def fakeLastName():
     return fakeValueFromList(["Wang", "Zhang", "Chen", "Singh", "Kumar", "Ali", "Nguyen", "Khan", "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzales", "Jackson", "Lee", "Perez", "Thompson"]);
 

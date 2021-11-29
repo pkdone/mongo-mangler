@@ -11,7 +11,7 @@ fakeNumber(numberOfDigits)
 // Generate a while number between a given minimum and maximum number (inclusive)
 fakeNumberBounded(minNumber, maxNumber)
 
-// Generate a text representation of whole number a specific number of digits (characters) in length
+// Generate a text representation of whole number to a specific number of digits (characters) in length
 fakePaddedNumberAsText(numberOfDigits)
 
 // Generate a decimal number between 0.0 and 1.0 with up to 16 decimal places
@@ -41,7 +41,7 @@ fakeNChars(char, amount)
 // Generate a typical first name from an internal pre-defined list of common first names
 fakeFirstName()
 
-// FAKE DATA:Generate a typical last name from an internal pre-defined list of common last names
+// Generate a typical last name from an internal pre-defined list of common last names
 fakeLastName()
 
 // Generate a typical street name from an internal pre-defined list of common street names
