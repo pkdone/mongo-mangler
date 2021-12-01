@@ -267,7 +267,7 @@ def executeCopyAggPipeline(url, srcDbName, tgtDbName, srcCollName, tgtCollName, 
 
     fullPipeline.append(
         {"$unset": [
-          "_id"
+            "_id"
         ]}
     )
 
@@ -276,9 +276,9 @@ def executeCopyAggPipeline(url, srcDbName, tgtDbName, srcCollName, tgtCollName, 
 
     fullPipeline.append(
         {"$merge": {
-          "into": {"db": tgtDbName, "coll": tgtCollName},
-          "whenMatched": "fail",
-          "whenNotMatched": "insert"
+            "into": {"db": tgtDbName, "coll": tgtCollName},
+            "whenMatched": "fail",
+            "whenNotMatched": "insert"
         }}
     )
 
@@ -315,7 +315,7 @@ def getRangeShardKeySplitPoints(srcDb, srcCollName, shardKeyFields):
         secondFieldsplitPoints = getSplitPointsForAField(srcDb, srcCollName, secondFieldName,
                                                          targetSplitPointsAmountPerField)
 
-        # Produce split points like {"aaa": "XYZ", "bbb": 123} as a Cartesian product of the splits
+        # Produce split points like {"aaa": "XYZ", "bbb": 123} as a Cartesian Product of the splits
         # from the two fields
         for firstFieldPoint in firstFieldsplitPoints:
             for secondFieldPoint in secondFieldsplitPoints:
@@ -328,17 +328,17 @@ def getRangeShardKeySplitPoints(srcDb, srcCollName, shardKeyFields):
 
 ##
 # Analyse the type for a field in the first document in a collection and then analyse the whole
-# collection using "$bucketAuto" to get a roughly even range spread of values for the field
+# collection using "$bucketAuto" to get a roughly even range spread of values for the field.
 ##
 def getSplitPointsForAField(db, collName, field, targetSplitPointsAmount):
     # Pipeline to check the type of the field in an existing document and assume all occurrences
     # will have this type
     typePipeline = [
-      {"$limit": 1},
-      {"$project": {
-        "_id": 0,
-        "type": {"$type": "$" + field},
-      }},
+        {"$limit": 1},
+        {"$project": {
+            "_id": 0,
+            "type": {"$type": f"${field}"},
+        }},
     ]
 
     firstRecord = db[collName].aggregate(typePipeline).next()
@@ -355,21 +355,21 @@ def getSplitPointsForAField(db, collName, field, targetSplitPointsAmount):
     # Only makes sense to split on specific types (e.g. not boolean which can have only 2 values)
     if type in ["string", "date", "int", "double", "long", "timestamp", "decimal"]:
         splitPointsPipeline = [
-          {"$bucketAuto": {
-            "groupBy": f"${field}", "buckets": targetSplitPointsAmount
-          }},
+            {"$bucketAuto": {
+                "groupBy": f"${field}", "buckets": targetSplitPointsAmount
+            }},
 
-          {"$group": {
-            "_id": "",
-            "splitsCount": {"$sum": 1},
-            "splitPoints": {
-                "$push": "$_id.min",
-            },
-          }},
+            {"$group": {
+                "_id": "",
+                "splitsCount": {"$sum": 1},
+                "splitPoints": {
+                    "$push": "$_id.min",
+                },
+            }},
 
-          {"$unset": [
-            "_id",
-          ]},
+            {"$unset": [
+                "_id",
+            ]},
         ]
 
         result = db[collName].aggregate(splitPointsPipeline).next()
@@ -630,7 +630,7 @@ def printCollectionData(db, collName):
 # a source collection.
 #
 # The 'funcToParallelise' argument should have the following signature:
-#     myfunc(*args, limit)
+#     myfunc(*args, limit, skip)
 # E.g.:
 #     myfunc(url, dbName, collName, tgtCollName, customPipelineFile, limit, skip)
 ##
@@ -664,7 +664,7 @@ def wrapperProcessWithKeyboardException(*args):
     try:
         args[0](*(args[1:]))
     except OperationFailure as err:
-        print("\n\nError occurred when MongoDB Aggregation tried to execution the provided "
+        print("\n\nError occurred when MongoDB Aggregation tried to execute the provided "
               "aggregation pipeline. NOTE: This often occurs if you are using a mask function to "
               "mask some fields from the source input collection but those fields don't exist in "
               "the source collection - first check you have populated the source collection "
@@ -691,7 +691,7 @@ DO_PROPER_RUN = True
 LARGE_COLLN_COUNT_THRESHOLD = 100_000_000
 TARGET_SPLIT_POINTS_AMOUNT = 512
 BALANCED_CHUNKS_MAX_DIFFERENCE = 8
-MAX_WAIT_TIME_FOR_CHUNKS_BALANCE_SECS = 600
+MAX_WAIT_TIME_FOR_CHUNKS_BALANCE_SECS = 800
 BALANCE_CHECK_SLEEP_SECS = 5
 DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 PY_IMPORTS_FILE = "lib/masksFakesGeneraters_py_imports.py"

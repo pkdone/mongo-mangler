@@ -258,7 +258,7 @@ IMPORTANT: When defining the `pipeline` variable in the file, do not include any
 
 The [examples sub-folder](examples) contains two sample pipelines (one for _faking_ and one for _masking_) and also contains a test MongoDB Shell script and a test Python script, for you to test the example pipelines or your custom pipeline, before you use your pipeline file when running `mongo-mangler.py`.
 
-To test the pipeline file when run as a part of a script with the MongoDB Shell, from a terminal, change directory to the [examples sub-folder](examples) and executed the provided test script `test-agg-mongosh.js` via `mongosh`. For example, to test the _fake example pipeline_ against a locally running MongoDB database, execute:
+To test the pipeline file when run as a part of a script with the MongoDB Shell, from a terminal, change directory to the [examples sub-folder](examples) and execute the provided test script `test-agg-mongosh.js` via `mongosh`. For example, to test the _fake example pipeline_ against a locally running MongoDB database, execute:
 
 ```console
 mongosh --quiet 'mongodb://localhost:27017' test-agg-mongosh.js
