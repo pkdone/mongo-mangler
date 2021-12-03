@@ -30,7 +30,7 @@ The test environment used to produce the outlined results consisted of:
  * __MongoDB deployment topology__:  A single unsharded replica set consisting of 3 replicas
  * __Collection and ingestion specifics__:  0.45 kb average-sized documents, no secondary indexes defined, write concern of _1_ configured for the ingestion (merging) workload
  * __Host machine specification per replica__:  Linux VM, Intel Xeon processor, 16 cores, 64GB RAM, 3000 storage IOPS (non-provisioned), 500GB storage volume (i.e. an _Atlas M60_ tier in AWS)
- * __Client workstation specification__:  Just a regular laptop with low-bandwidth connectivity (essentially it will just be idling throughout the test run, mostly blocking to wait for responses to the aggregations it's issued against the database).
+ * __Client workstation specification__:  Just a regular laptop with low-bandwidth connectivity (essentially it is just idling throughout the test run, mostly blocking to wait for responses to the aggregation merge operations it has issued against the database).
 
 
 ## How High Performance Is Achieved

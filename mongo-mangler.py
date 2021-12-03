@@ -561,7 +561,7 @@ def removeTempCollections(db, collectionNames):
 # Drop collection.
 ##
 def dropCollection(db, coll):
-    print(f" DROP. Removing existing collection: '{db.name}.{coll}'")
+    print(f" DROP: Removing existing collection: '{db.name}.{coll}'")
     db.drop_collection(coll)
 
 
