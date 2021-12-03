@@ -236,7 +236,7 @@ def copyDataToNewCollection(url, srcDbName, tgtDbName, srcCollName, tgtCollName,
                  f"readable.\n")
 
     if DO_PROPER_RUN:
-        print("  |-> ", end="", flush=True)
+        print(" |-> ", end="", flush=True)
         spawnBatchProcesses(aggBatches, executeCopyAggPipeline, url, srcDbName, tgtDbName,
                             srcCollName, tgtCollName, customPipelineFile)
 
