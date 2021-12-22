@@ -182,7 +182,7 @@ From the root folder of this project, execute the following to connect to a remo
 
 _NOTE 1_: Before running the above command, first change the URL's _username_, _password_, and _hostname_, to match the URL of your running MongoDB cluster, and if not using the Atlas _sample data set_, change the values for the source database and collection names.
 
-_NOTE 2_: If executing the command against a sharded cluster, by default a hash-based shard key will be configured based on the `_id` field. To use a range-based shard key, provide the `--shardkey` parameter in the caommand line, providing the name of the field to use as the shard key (or to specify a compound key, provide a string of comma separated field names, with no spaces between the field names).
+_NOTE 2_: If executing the command against a sharded cluster, by default a hash-based shard key will be configured based on the `_id` field. To use a range-based shard key, provide the `--shardkey` parameter in the command line, providing the name of the field to use as the shard key (or to specify a compound key, provide a string of comma separated field names, with no spaces between the field names).
 
 ### Generate A New Large Collection From Scratch With Fake Data
 
