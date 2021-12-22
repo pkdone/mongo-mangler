@@ -76,8 +76,7 @@ def main():
     shardKeyElements = []
 
     if args.shardkey:
-        shardKeyElements = [field.strip()
-                            for field in args.shardkey.split(',')]
+        shardKeyElements = [field.strip() for field in args.shardkey.split(',')]
 
     tgtDbName = args.dbtgt if args.dbtgt else args.dbsrc
     run(args.url, args.dbsrc, args.collsrc, tgtDbName, args.colltgt, args.size, args.compression,
@@ -141,8 +140,7 @@ def run(url, srcDbName, srcCollName, tgtDbName, tgtCollName, size, compression, 
 
     # If sharded with range based shark key, see if can get a list of pre-split points
     if isClusterSharded and shardKeyFields:
-        rangeShardKeySplits = getRangeShardKeySplitPoints(
-            srcDb, srcCollName, shardKeyFields)
+        rangeShardKeySplits = getRangeShardKeySplitPoints(srcDb, srcCollName, shardKeyFields)
 
     # Create final collection now in case it's sharded and has pre-split chunks - want enough time
     # for balancer to spread out the chunks before it comes under intense ingestion load
@@ -163,7 +161,7 @@ def run(url, srcDbName, srcCollName, tgtDbName, tgtCollName, size, compression, 
     for magnitudeDifference in range(0, magnitudesOfDifference):
         tmpCollName = f"TEMP_{srcCollName}_{magnitudeDifference}"
         ceilingAmount = (10 ** (math.ceil(math.log10(originalAmountAvailable)) +
-                                magnitudeDifference))
+                         magnitudeDifference))
         createCollection(adminDB, tgtDb, tmpCollName, compression, isClusterSharded, shardKeyFields,
                          rangeShardKeySplits, ceilingAmount, False)
         copyDataToNewCollection(url, dbInName, tgtDbName, lastCollSrcName, tmpCollName,
@@ -175,8 +173,7 @@ def run(url, srcDbName, srcCollName, tgtDbName, tgtCollName, size, compression, 
 
     # If target collection uses range shard key pre-spliting, wait for the chunks to be balanced
     if rangeShardKeySplits:
-        waitForPresplitChunksToBeBalanced(
-            configDB, tgtDbName, tgtCollName, mdbMajorVersion)
+        waitForPresplitChunksToBeBalanced(configDB, tgtDbName, tgtCollName, mdbMajorVersion)
 
     # Do final inflation to the final collection and print summary
     copyDataToNewCollection(url, dbInName, tgtDbName, lastCollSrcName, tgtCollName,
@@ -191,8 +188,7 @@ def run(url, srcDbName, srcCollName, tgtDbName, tgtCollName, size, compression, 
     # Clean-up any temporary collections that are no longer needed
     if DO_PROPER_RUN:
         if srcCollName in tempCollectionsToRemove:
-            # Ensure not removing original collection
-            tempCollectionsToRemove.remove(srcCollName)
+            tempCollectionsToRemove.remove(srcCollName)  # Ensure not removing original collection
 
         removeTempCollections(tgtDb, tempCollectionsToRemove)
 
@@ -214,14 +210,12 @@ def copyDataToNewCollection(url, srcDbName, tgtDbName, srcCollName, tgtCollName,
     # If source and destination size the same then unlikely to be inflating and more like to be just
     # masking current date with same size output
     if srcSize == tgtSize:
-        # Want 10 sub-process but not if < 10 docs
-        iterations = min(10, math.floor(tgtSize / 10))
+        iterations = min(10, math.floor(tgtSize / 10))  # Want 10 sub-process but not if < 10 docs
         batchSize = math.floor(tgtSize / 10)
         remainder = tgtSize % 10
         skipFactor = 1  # Need to skip cos don't want to duplicate any source data
     else:
-        # Will be up to 10 sub-processes
-        iterations = math.floor(tgtSize / srcSize)
+        iterations = math.floor(tgtSize / srcSize)  # Will be up to 10 sub-processes
         batchSize = srcSize
         remainder = tgtSize % srcSize
         skipFactor = 0  # Don't want to skip - just using source data to duplication to target
@@ -230,13 +224,11 @@ def copyDataToNewCollection(url, srcDbName, tgtDbName, srcCollName, tgtCollName,
 
     for iteration in range(0, iterations):
         lastIteration = iteration
-        aggBatches.append(AggBatchMetadata(
-            batchSize, (lastIteration*batchSize*skipFactor)))
+        aggBatches.append(AggBatchMetadata(batchSize, (lastIteration*batchSize*skipFactor)))
 
     if remainder:
         lastIteration += 1
-        aggBatches.append(AggBatchMetadata(
-            remainder, (lastIteration*batchSize*skipFactor)))
+        aggBatches.append(AggBatchMetadata(remainder, (lastIteration*batchSize*skipFactor)))
 
     if customPipelineFile and (not isfile(customPipelineFile) or
                                not access(customPipelineFile, R_OK)):
@@ -315,8 +307,7 @@ def getRangeShardKeySplitPoints(srcDb, srcCollName, shardKeyFields):
         # We want 256 splits points overall but If we ask for 256 splits for fields 1 and 256 splits
         # for field 2 there will be 256x256=65536 split points. Instead we want the square root
         # quantity for each field, ie. 16x16=256 - so we want 16 for field 1 and 16 for field 2
-        targetSplitPointsAmountPerField = math.ceil(
-            math.sqrt(TARGET_SPLIT_POINTS_AMOUNT))
+        targetSplitPointsAmountPerField = math.ceil(math.sqrt(TARGET_SPLIT_POINTS_AMOUNT))
         firstFieldName = shardKeyFields[0]
         secondFieldName = shardKeyFields[1]
         firstFieldsplitPoints = getSplitPointsForAField(srcDb, srcCollName, firstFieldName,
@@ -401,11 +392,11 @@ def createCollection(adminDB, db, collname, compression, isClusterSharded, shard
     dropCollection(db, collname)
 
     doShardCollection = True if (isClusterSharded and (isFinalCollection or
-                                                       (indtendedSize >= LARGE_COLLN_COUNT_THRESHOLD))) else False
+                                 (indtendedSize >= LARGE_COLLN_COUNT_THRESHOLD))) else False
 
     # Create the collection a specific compression algorithm
     db.create_collection(collname, storageEngine={"wiredTiger":
-                                                  {"configString": f"block_compressor={compression}"}})
+                         {"configString": f"block_compressor={compression}"}})
 
     # If collection is to be sharded need to configure shard key + pre-splitting
     if doShardCollection:  # SHARDED collection
@@ -424,14 +415,12 @@ def createCollection(adminDB, db, collname, compression, isClusterSharded, shard
                 keyFieldOrders[field] = 1
 
             # Configure range based shard key which is pre-split
-            adminDB.command("shardCollection",
-                            f"{db.name}.{collname}", key=keyFieldOrders)
+            adminDB.command("shardCollection", f"{db.name}.{collname}", key=keyFieldOrders)
 
             if rangeShardKeySplits:
                 for splitPoint in rangeShardKeySplits:
                     # print(f"TO {db.name}.{collname} adding middle split point: {splitPoint}")
-                    adminDB.command(
-                        "split", f"{db.name}.{collname}", middle=splitPoint)
+                    adminDB.command("split", f"{db.name}.{collname}", middle=splitPoint)
 
                 print(f" CREATE. Created collection '{db.name}.{collname}' "
                       f"(compression={compression}) - sharded with range shard key on "
@@ -462,8 +451,7 @@ def waitForPresplitChunksToBeBalanced(configDB, dbName, collName, mdbMajorVersio
     lastChunkCountDifference = -1
     finalConvergenceAttemps = 0
     startTime = datetime.now()
-    (aggColl, aggPipeline) = getShardChunksCollAndAggPipeline(
-        dbName, collName, mdbMajorVersion)
+    (aggColl, aggPipeline) = getShardChunksCollAndAggPipeline(dbName, collName, mdbMajorVersion)
 
     # Periodically run agg pipeline (+ by a sleep) until chunks counts roughly matches on all shards
     while collectionIsImbalanced and (waitTimeSecs < MAX_WAIT_TIME_FOR_CHUNKS_BALANCE_SECS):
@@ -598,16 +586,11 @@ def getPipelineFromPyAggFile(filename):
 ##
 def convertJsContentToPy(code):
     pythonContent = code
-    pythonContent = re.sub("/\\*.*?\\*/", "", pythonContent,
-                           flags=re.DOTALL)  # remove block cmnts
-    pythonContent = re.sub(r"//.*?\n", "\n", pythonContent,
-                           flags=re.M)  # remove all line comments
-    pythonContent = re.sub(r"true", "True", pythonContent,
-                           flags=re.M)  # convert js to py bool
-    pythonContent = re.sub(r"false", "False", pythonContent,
-                           flags=re.M)  # convert js to py bool
-    pythonContent = re.sub(r"null", "None", pythonContent,
-                           flags=re.M)  # convert js null to py
+    pythonContent = re.sub("/\\*.*?\\*/", "", pythonContent, flags=re.DOTALL)  # remove block cmnts
+    pythonContent = re.sub(r"//.*?\n", "\n", pythonContent, flags=re.M)  # remove all line comments
+    pythonContent = re.sub(r"true", "True", pythonContent, flags=re.M)  # convert js to py bool
+    pythonContent = re.sub(r"false", "False", pythonContent, flags=re.M)  # convert js to py bool
+    pythonContent = re.sub(r"null", "None", pythonContent, flags=re.M)  # convert js null to py
     return pythonContent
 
 
@@ -634,12 +617,10 @@ def printCollectionData(db, collName):
         print(f" Average object size: {int(collstats['avgObjSize'])}")
         print(f" Docs amount: {db[collName].count_documents({})}")
         print(f" Docs size (uncompressed): {collstats['size']}")
-        print(
-            f" Index size (with prefix compression): {collstats['totalIndexSize']}")
+        print(f" Index size (with prefix compression): {collstats['totalIndexSize']}")
         print(f" Data size (index + uncompressed docs): "
               f"{collstats['size'] + collstats['totalIndexSize']}")
-        print(
-            f" Stored data size (docs+indexes compressed): {collstats['totalSize']}")
+        print(f" Stored data size (docs+indexes compressed): {collstats['totalSize']}")
     else:
         print(f"Collection '{db.name}.{collName}' does not exist")
 
@@ -659,7 +640,7 @@ def spawnBatchProcesses(batches, funcToParallelise, *args):
     # Create a set of OS processes to perform each batch job in parallel
     for batch in batches:
         process = Process(target=wrapperProcessWithKeyboardException, args=(funcToParallelise,
-                                                                            *args, batch.limit, batch.skip))
+                          *args, batch.limit, batch.skip))
         processesList.append(process)
 
     try:
