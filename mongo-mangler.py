@@ -347,8 +347,8 @@ def getSplitPointsForAField(db, collName, field, targetSplitPointsAmount):
     # Can't do anything if can't infer type
     if type == "missing":
         sys.exit(f"\nERROR: Shard key field '{field}' is not present in the first document in the"
-                 f" source collection '{srcCollName}' and hence cannot be used as part or all of "
-                 f"the shard key definition.\n")
+                 f" source collection '{collName}' and hence cannot be used as part or all of the "
+                 f" shard key definition.\n")
 
     fieldSplitPoints = []
 
