@@ -9,13 +9,13 @@ pipeline = [
         "reported": maskAlterBoolean("$reported", 50),                                          // Flip boolean value 50% of the time
         "flagged": maskAlterBoolean("$flagged", 80),                                            // 80% time same boolean value, rest of time the opposite
         "interestRate": maskAlterDecimal("$interestRate", 20),                                  // Change decimal by +/- 20% of its current value
-        "balance": maskAlterDecimal("$balance", 10),                                            // Change decimal by +/- 20% of its current value
+        "balance": maskAlterDecimal("$balance", 10),                                            // Change decimal by +/- 10% of its current value
         "cardType": maskAlterValueFromList("$cardType", 90, ["CREDIT", "DEBIT", "VOUCHER"]),    // 90% time same value, rest of time one of any value
-        "classification": maskAlterValueFromList("$classification", 50, ["A+", "B", "C", "D"]), // 60% time same value, rest of time one of any value
+        "classification": maskAlterValueFromList("$classification", 50, ["A+", "B", "C", "D"]), // 50% time same value, rest of time one of any value
         "address.number": maskAlterNumber("$address.number", 10),                               // Change number by +/- 10% of its current value
         "address.street": maskReplaceFirstPart("$address.street", 6),                           // Obfuscate first 6 chars of street name
         "address.town": maskReplaceAll("$address.town"),                                        // Obfuscate all chars (same length string result)
-        "address.country": maskReplaceLastPart("$address.country", 5),                          // Obfuscate first 5 chars of street name
+        "address.country": maskReplaceLastPart("$address.country", 5),                          // Obfuscate last 5 chars of street name
         "address.zipcode": maskAlterNumber("$address.zipcode", 10),                             // Change number by +/- 10% of its current value
         "records": maskAlterListFromList("$records", 50, ["X", "Y", "Z"]),                      // Change on average 50% of list members to random values
     }},
