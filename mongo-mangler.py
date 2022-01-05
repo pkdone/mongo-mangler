@@ -126,7 +126,7 @@ def run(url, srcDbName, srcCollName, tgtDbName, tgtCollName, size, compression, 
                   f" action privileges to run the 'enablingSharding' and 'splitChunk' commands). If"
                   f" this is an Atlas cluster, you would typically need to assign the 'Atlas Admin'"
                   f" role to the database user.")
-        elif opFailure.code != 59:  # '15' signifies 'no such command' error which is fine
+        elif opFailure.code != 15:  # '15' signifies 'no such command' error which is fine
             print(f" WARNING: Unable to successfully enable sharding for the database. Error: "
                   f"{opFailure.details}.")
 
@@ -464,8 +464,8 @@ def waitForPresplitChunksToBeBalanced(configDB, dbName, collName, mdbMajorVersio
 
         if not chunkCounts:
             print(f" WARNING: Unable to wait for sharded collection to evenly balance because "
-                  f"chunks metadata for the collection doesn't to be present - this may indicate a"
-                  f" more critical problem")
+                  f"chunks metadata for the collection doesn't seem to be present - this may "
+                  f"indicate a more critical problem")
             return
 
         chunkCounts.sort()
