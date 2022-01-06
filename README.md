@@ -254,7 +254,7 @@ pipeline = [
 ]
 ```
 
-IMPORTANT: When defining the `pipeline` variable in the file, do not include any JavaScript variable qualifier such as `let`, `var` or `const`, because the pipeline code will be converted to Python on the fly by `mongo-mangler.py` tool. The tool has only limited `JavaScript-to-Python` conversion capabilities.
+IMPORTANT: When defining the `pipeline` variable in the file, do not include any JavaScript variable qualifiers such as `let`, `var` or `const`. This is because the pipeline code will be converted to Python on the fly by `mongo-mangler.py` tool and the tool has only limited _JavaScript-to-Python_ conversion capabilities.
 
 The [examples sub-folder](examples) contains two sample pipelines (one for _faking_ and one for _masking_) and also contains a test MongoDB Shell script and a test Python script, for you to test the example pipelines or your custom pipeline, before you use your pipeline file when running `mongo-mangler.py`.
 

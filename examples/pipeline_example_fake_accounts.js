@@ -11,7 +11,7 @@ pipeline = [
         "interestRate": fakeDecimal(),                                                         // Random decimal number between 0.0 and 1.0
         "balance": fakeDecimalSignificantPlaces(8),                                            // Random decimal number to 8 significant places
         "cardType": fakeValueFromList(["CREDIT", "DEBIT", "VOUCHER"]),                         // Randomly set to one of CREDIT | DEBIT | VOUCHER
-        "classification": fakeValueFromListWeighted(["A+", "B", "C", "D"]),                    // Random value more likely from later part of list
+        //"classification": fakeValueFromListWeighted(["A+", "B", "C", "D"]),                  // Random value more likely from later part of list - COMMENTED OUT AS ONLY WORKS IN MDB 5.0+
         "address.number": fakeNumberBounded(1, 99),                                            // Random house number between 1-99
         "address.street": fakeStreetName(),                                                    // Random street name         
         "address.town": fakeTownName(),                                                        // Random town name         

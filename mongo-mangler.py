@@ -98,49 +98,37 @@ def run(url, srcDbName, srcCollName, tgtDbName, tgtCollName, size, compression, 
     tgtDb = connection[tgtDbName]
     mdbVersion = adminDB.command({'buildInfo': 1})['version']
     mdbMajorVersion = int(mdbVersion.split('.')[0])
+    checkCustomPipelineFileIsReadable(customPipelineFile)
     originalAmountAvailable = srcDb[srcCollName].count_documents({})
+    originalCollectionIsEmtpy = False
     print(" TIMER: Started timer having now finished counting source collection")
     start = datetime.now()
+    isClusterSharded = enabledShardingIfPossible(adminDB, tgtDbName)
+    rangeShardKeySplits = []
+
+    # If sharded with range based shark key, see if can get a list of pre-split points
+    # (also if no source collection, need to generate some temporary data to be able to sample it)
+    if isClusterSharded and shardKeyFields:
+        (checkDB, checkCollName) = createTmpSampleCollIfNecessary(url, srcDb, tgtDb, srcCollName,
+                                                                  customPipelineFile, size)
+        rangeShardKeySplits = getRangeShardKeySplitPoints(checkDB, checkCollName, shardKeyFields)
+
+        if checkCollName != srcCollName:  # Remove temp collection if it exists
+            checkDB.drop_collection(checkCollName)
 
     # If a source collection is not defined, create an arbitrary collection with one dummy record
     # with just one field ('_id')
     if originalAmountAvailable <= 0:
-        srcDb.drop_collection(srcCollName)
+        originalCollectionIsEmtpy = True
         srcDb[srcCollName].insert_one({})
         print(f" WARNING: Created a source collection for '{srcDbName}.{srcCollName}' because it "
-              f"doesn't already exist, and added one dummy record with just an '_id' field")
+              f"doesn't already exist (or has no data), and added one dummy record with just an "
+              f"'_id' field")
         originalAmountAvailable = 1
 
     # If no target size specified assume target collection should be same size as source collection
     if size <= 0:
         size = originalAmountAvailable
-
-    # Try to enable sharding and if can't we know its just a simple replica-set
-    try:
-        adminDB.command("enableSharding", tgtDbName)
-        isClusterSharded = True
-    except OperationFailure as opFailure:
-        if opFailure.code == 13:  # '13' signifies 'authorization' error
-            print(f" WARNING: Cannot enable sharding for the database because the specified "
-                  f"database user does not have the 'clusterManager' built-in role assigned (or the"
-                  f" action privileges to run the 'enablingSharding' and 'splitChunk' commands). If"
-                  f" this is an Atlas cluster, you would typically need to assign the 'Atlas Admin'"
-                  f" role to the database user.")
-        elif opFailure.code != 15:  # '15' signifies 'no such command' error which is fine
-            print(f" WARNING: Unable to successfully enable sharding for the database. Error: "
-                  f"{opFailure.details}.")
-
-        isClusterSharded = False
-    except Exception as e:
-        print(" WARNING: Unable to successfully enable sharding for the database. Error: ")
-        pprint(e)
-        isClusterSharded = False
-
-    rangeShardKeySplits = []
-
-    # If sharded with range based shark key, see if can get a list of pre-split points
-    if isClusterSharded and shardKeyFields:
-        rangeShardKeySplits = getRangeShardKeySplitPoints(srcDb, srcCollName, shardKeyFields)
 
     # Create final collection now in case it's sharded and has pre-split chunks - want enough time
     # for balancer to spread out the chunks before it comes under intense ingestion load
@@ -158,7 +146,7 @@ def run(url, srcDbName, srcCollName, tgtDbName, tgtCollName, size, compression, 
     lastCollSrcName = srcCollName
 
     # Loop inflating by an order of magnitude each time (if there really is such a difference)
-    for magnitudeDifference in range(0, magnitudesOfDifference):
+    for magnitudeDifference in range(1, magnitudesOfDifference):
         tmpCollName = f"TEMP_{srcCollName}_{magnitudeDifference}"
         ceilingAmount = (10 ** (math.ceil(math.log10(originalAmountAvailable)) +
                          magnitudeDifference))
@@ -175,10 +163,16 @@ def run(url, srcDbName, srcCollName, tgtDbName, tgtCollName, size, compression, 
     if rangeShardKeySplits:
         waitForPresplitChunksToBeBalanced(configDB, tgtDbName, tgtCollName, mdbMajorVersion)
 
-    # Do final inflation to the final collection and print summary
+    # Do final inflation to the final collection
     copyDataToNewCollection(url, dbInName, tgtDbName, lastCollSrcName, tgtCollName,
                             sourceAmountAvailable, size, customPipelineFile)
     tempCollectionsToRemove.append(lastCollSrcName)
+
+    # Restore source collection to empty state if it was originally empty
+    if originalCollectionIsEmtpy:
+        srcDb[srcCollName].delete_many({})
+
+    # End timer and print summary
     end = datetime.now()
     print(f"Finished database processing work in {int((end-start).total_seconds())} seconds "
           f"({datetime.now().strftime(DATE_TIME_FORMAT)})\n")
@@ -202,8 +196,8 @@ def run(url, srcDbName, srcCollName, tgtDbName, tgtCollName, size, compression, 
 ##
 def copyDataToNewCollection(url, srcDbName, tgtDbName, srcCollName, tgtCollName, srcSize, tgtSize,
                             customPipelineFile):
-    print(f" COPY. Source size: {srcSize}, target size: {tgtSize}, "
-          f"source coll: '{srcCollName}', target coll: '{tgtCollName}' "
+    print(f" COPY. Source size: {srcSize}, target size: {tgtSize}, source db coll: "
+          f"'{srcDbName}.{srcCollName}', target db coll: '{tgtDbName}.{tgtCollName}' "
           f"({datetime.now().strftime(DATE_TIME_FORMAT)})")
     aggBatches = []
 
@@ -215,10 +209,10 @@ def copyDataToNewCollection(url, srcDbName, tgtDbName, srcCollName, tgtCollName,
         remainder = tgtSize % 10
         skipFactor = 1  # Need to skip cos don't want to duplicate any source data
     else:
-        iterations = math.floor(tgtSize / srcSize)  # Will be up to 10 sub-processes
+        iterations = math.floor(tgtSize / srcSize)  # Normally <-10 sub-processes (can be <=99)
         batchSize = srcSize
         remainder = tgtSize % srcSize
-        skipFactor = 0  # Don't want to skip - just using source data to duplication to target
+        skipFactor = 0  # Don't want to skip - just using source data to duplicate to target
 
     lastIteration = -1
 
@@ -230,17 +224,22 @@ def copyDataToNewCollection(url, srcDbName, tgtDbName, srcCollName, tgtCollName,
         lastIteration += 1
         aggBatches.append(AggBatchMetadata(remainder, (lastIteration*batchSize*skipFactor)))
 
-    if customPipelineFile and (not isfile(customPipelineFile) or
-                               not access(customPipelineFile, R_OK)):
-        sys.exit(f"\nERROR: Pipeline file '{customPipelineFile}' does not exist or is not "
-                 f"readable.\n")
-
     if DO_PROPER_RUN:
         print(" |-> ", end="", flush=True)
         spawnBatchProcesses(aggBatches, executeCopyAggPipeline, url, srcDbName, tgtDbName,
                             srcCollName, tgtCollName, customPipelineFile)
 
     print("\n")
+
+
+##
+# See if can read custom agg pipeline file
+##
+def checkCustomPipelineFileIsReadable(customPipelineFile):
+    if customPipelineFile and (not isfile(customPipelineFile) or
+                               not access(customPipelineFile, R_OK)):
+        sys.exit(f"\nERROR: Pipeline file '{customPipelineFile}' does not exist or is not "
+                 f"readable.\n")
 
 
 ##
@@ -284,6 +283,32 @@ def executeCopyAggPipeline(url, srcDbName, tgtDbName, srcCollName, tgtCollName, 
 
     db[srcCollName].aggregate(fullPipeline)
     print("]", end="", flush=True)
+
+
+##
+# Create a temporary collection if source collection has no records and then populate if with some
+# data by running the custom pipeline so that subsequent shard range key sampling has some data to
+# work off.
+##
+def createTmpSampleCollIfNecessary(url, srcDb, tgtDb, srcCollName, customPipelineFile, size):
+    if isCollectionEmptyOrOnlyOneWithJustAnIDField(srcDb, srcCollName):
+        dummyCollName = f"TEMP_{srcCollName}_DUMMY"
+        tmpCollName = f"TEMP_{srcCollName}_SAMPLE"
+        print(f" SAMPLE-GENERATION. Needing to create a sharded collection with range key but "
+              f"source collection has no records to sample to determine the split points. Therefore"
+              f" creating a temporary collection to populate some records before trying to sample "
+              f"it (and deleting this temporary collection immediately afterwards). Temporary "
+              f"collection: {tgtDb.name}.{tmpCollName}'")
+        tgtDb.drop_collection(dummyCollName)
+        tgtDb.drop_collection(tmpCollName)
+        tgtDb[dummyCollName].insert_one({})
+        sampleAmount = min(size+1, MAX_TMP_SAMPLE_AMOUNT)
+        copyDataToNewCollection(url, tgtDb.name, tgtDb.name, dummyCollName, tmpCollName, 1,
+                                sampleAmount, customPipelineFile)
+        tgtDb.drop_collection(dummyCollName)
+        return (tgtDb, tmpCollName)
+    else:
+        return (srcDb, srcCollName)
 
 
 ##
@@ -347,8 +372,8 @@ def getSplitPointsForAField(db, collName, field, targetSplitPointsAmount):
     # Can't do anything if can't infer type
     if type == "missing":
         sys.exit(f"\nERROR: Shard key field '{field}' is not present in the first document in the"
-                 f" source collection '{collName}' and hence cannot be used as part or all of the "
-                 f" shard key definition.\n")
+                 f" source db collection '{db.name}.{collName}' and hence cannot be used as part or"
+                 f" all of the shard key definition.\n")
 
     fieldSplitPoints = []
 
@@ -424,7 +449,7 @@ def createCollection(adminDB, db, collname, compression, isClusterSharded, shard
 
                 print(f" CREATE. Created collection '{db.name}.{collname}' "
                       f"(compression={compression}) - sharded with range shard key on "
-                      f"'{shardKeyFieldsText}' (pre-split)")
+                      f"'{shardKeyFieldsText}' (pre-split into {len(rangeShardKeySplits)} parts)")
             else:
                 print(f" CREATE. Created collection '{db.name}.{collname}' "
                       f"(compression={compression}) - sharded with range shard key on "
@@ -455,6 +480,12 @@ def waitForPresplitChunksToBeBalanced(configDB, dbName, collName, mdbMajorVersio
 
     # Periodically run agg pipeline (+ by a sleep) until chunks counts roughly matches on all shards
     while collectionIsImbalanced and (waitTimeSecs < MAX_WAIT_TIME_FOR_CHUNKS_BALANCE_SECS):
+        if not shownSleepNotice:
+            print(f" WAITING. Waiting for the range key pre-split chunks to balance in the sharded"
+                  f" collection '{collName}' - this may take a few minutes")
+            shownSleepNotice = True
+
+        time.sleep(BALANCE_CHECK_SLEEP_SECS)
         shardsMetadata = configDB[aggColl].aggregate(aggPipeline)
         chunkCounts = []
 
@@ -468,6 +499,12 @@ def waitForPresplitChunksToBeBalanced(configDB, dbName, collName, mdbMajorVersio
                   f"indicate a more critical problem")
             return
 
+        if len(chunkCounts) < 2:
+            print(f" WARNING: Only seem to have access to chunk count data for one shard, so unable"
+                  f" to determine if the shards are evenly balanced. As a result, this process will"
+                  f" stop trying to wait")
+            return
+
         chunkCounts.sort()
         lastChunkCountDifference = chunkCounts[-1] - chunkCounts[0]
 
@@ -479,12 +516,6 @@ def waitForPresplitChunksToBeBalanced(configDB, dbName, collName, mdbMajorVersio
                 collectionIsImbalanced = False
                 break
 
-        if not shownSleepNotice:
-            print(f" WAITING. Waiting for the range key pre-split chunks to balance in the sharded"
-                  f" collection '{collName}' - this may take a few minutes")
-
-        time.sleep(BALANCE_CHECK_SLEEP_SECS)
-        shownSleepNotice = True
         waitTimeSecs = (datetime.now() - startTime).total_seconds()
 
     if collectionIsImbalanced:
@@ -495,7 +526,7 @@ def waitForPresplitChunksToBeBalanced(configDB, dbName, collName, mdbMajorVersio
     else:
         print(f" BALANCED. Sharded collection with range key pre-split chunks is now "
               f"balanced (wait time was {waitTimeSecs} secs). Maximum chunk count difference across"
-              f" all shards is: {lastChunkCountDifference})")
+              f" all shards is: {lastChunkCountDifference}")
 
 
 ##
@@ -550,6 +581,54 @@ def getShardChunksCollAndAggPipeline(dbName, collName, mdbMajorVersion):
 
 
 ##
+# Try to enable sharding and if can't we know its just a simple replica-set
+##
+def enabledShardingIfPossible(adminDB, dbName):
+    isClusterSharded = False
+
+    try:
+        adminDB.command("enableSharding", dbName)
+        isClusterSharded = True
+    except OperationFailure as opFailure:
+        if opFailure.code == 13:  # '13' signifies 'authorization' error
+            print(f" WARNING: Cannot enable sharding for the database because the specified "
+                  f"database user does not have the 'clusterManager' built-in role assigned (or the"
+                  f" action privileges to run the 'enablingSharding' and 'splitChunk' commands). If"
+                  f" this is an Atlas cluster, you would typically need to assign the 'Atlas Admin'"
+                  f" role to the database user.")
+        elif (opFailure.code != 15) and (opFailure.code != 59):  # Codes for'no such command' so OK
+            print(f" WARNING: Unable to successfully enable sharding for the database. Error: "
+                  f"{opFailure.details}.")
+    except Exception as e:
+        print(" WARNING: Unable to successfully enable sharding for the database. Error: ")
+        pprint(e)
+
+    return isClusterSharded
+
+
+##
+# Check if the source collection is just a dummy collection created from a previous run of this tool
+# that failed to clean up due to an error (i.e. only a single record exists in the collection and it
+# only had one field which is the _id field).
+##
+def isCollectionEmptyOrOnlyOneWithJustAnIDField(db, collName):
+    firstRecord = None
+    recordCount = 0
+    records = db[collName].find().limit(2)
+
+    for record in records:
+        if not firstRecord:
+            firstRecord = record
+
+        recordCount += 1
+
+    if (recordCount <= 0) or ((recordCount == 1) and (len(firstRecord.keys()) <= 1)):
+        return True
+
+    return False
+
+
+##
 # Drop all temporary collections used.
 ##
 def removeTempCollections(db, collectionNames):
@@ -560,9 +639,9 @@ def removeTempCollections(db, collectionNames):
 ##
 # Drop collection.
 ##
-def dropCollection(db, coll):
-    print(f" DROP: Removing existing collection: '{db.name}.{coll}'")
-    db.drop_collection(coll)
+def dropCollection(db, collName):
+    print(f" DROP: Removing existing collection: '{db.name}.{collName}'")
+    db.drop_collection(collName)
 
 
 ##
@@ -622,7 +701,7 @@ def printCollectionData(db, collName):
               f"{collstats['size'] + collstats['totalIndexSize']}")
         print(f" Stored data size (docs+indexes compressed): {collstats['totalSize']}")
     else:
-        print(f"Collection '{db.name}.{collName}' does not exist")
+        print(f" Collection '{db.name}.{collName}' does not exist or have any data")
 
 
 ##
@@ -690,6 +769,7 @@ def shutdown():
 DO_PROPER_RUN = True
 LARGE_COLLN_COUNT_THRESHOLD = 100_000_000
 TARGET_SPLIT_POINTS_AMOUNT = 512
+MAX_TMP_SAMPLE_AMOUNT = 64
 BALANCED_CHUNKS_MAX_DIFFERENCE = 8
 MAX_WAIT_TIME_FOR_CHUNKS_BALANCE_SECS = 800
 BALANCE_CHECK_SLEEP_SECS = 5
