@@ -106,7 +106,7 @@ def run(url, srcDbName, srcCollName, tgtDbName, tgtCollName, size, compression, 
     isClusterSharded = enabledShardingIfPossible(adminDB, tgtDbName)
     rangeShardKeySplits = []
 
-    # If sharded with range based shark key, see if can get a list of pre-split points
+    # If sharded with range based shard key, see if can get a list of pre-split points
     # (also if no source collection, need to generate some temporary data to be able to sample it)
     if isClusterSharded and shardKeyFields:
         (checkDB, checkCollName) = createTmpSampleCollIfNecessary(url, srcDb, tgtDb, srcCollName,
