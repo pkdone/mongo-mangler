@@ -2,13 +2,13 @@
 // Generate a random date between now and a maximum number of milliseconds from now
 fakeDateAfterNow(maxMillisFromNow)
 
-// Generate a random date between a maximum number of milliseconds before now and now
+// Generate a random date between a maximum number of milliseconds before now
 fakeDateBeforeNow(maxMillisBeforeNow)
 
 // Generate a whole number up to a maximum number of digits (any more than 15 are ignored)
 fakeNumber(numberOfDigits)
 
-// Generate a while number between a given minimum and maximum number (inclusive)
+// Generate a whole number between a given minimum and maximum number (inclusive)
 fakeNumberBounded(minNumber, maxNumber)
 
 // Generate a text representation of whole number to a specific number of digits (characters) in length
