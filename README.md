@@ -52,6 +52,9 @@ The _mongo-mangler_ tool also provides a set of [library functions](lib/masksFak
 The _[fake_accounts](examples/pipeline_example_fake_accounts.js)_ example pipeline provided in this project shows an example of how to generate fictitious bank account records using the supplied _faker_ library. Below is the list of _faking_ functions the library provides for use in your custom pipelines, with descriptions for each:
 
 ```javascript
+// Generate a random date between a start point of millis after 01-Jan-1970 and a maximum set of milliseconds after that date
+fakeDateMillisFromEpoch(startMillis, maxMillis)
+
 // Generate a random date between now and a maximum number of milliseconds from now
 fakeDateAfterNow(maxMillisFromNow)
 
@@ -73,6 +76,9 @@ fakeDecimal()
 // Generate a decimal number with up to a specified number of significant places (e.g. '3' places -> 736.274473638742)
 fakeDecimalSignificantPlaces(maxSignificantPlaces)
 
+// Generate a currency amount with just 2 decimal places and up to a specified number of significant places (e.g. '3' places -> 736.27)
+fakeMoneyAmountDecimal(maxSignificantPlaces)
+
 // Generate a True or False value randomly
 fakeBoolean()
 
@@ -89,13 +95,28 @@ fakeValueFromListWeighted(listOfValues)
 fakeListOfSubDocs(numSumDocs, listOfValues)
 
 // Generate string composed of the same character repeated the specified number of times 
-fakeNChars(char, amount)
+fakeNSameChars(char, amount)
+
+// Generate string composed of random English alphabet uppercase characters repeated the specified number of times 
+fakeNAnyUpperChars(amount)
+
+// Generate string composed of random English alphabet lowercase characters repeated the specified number of times 
+fakeNAnyLowerChars(amount)
 
 // Generate a typical first name from an internal pre-defined list of common first names
 fakeFirstName()
 
 // Generate a typical last name from an internal pre-defined list of common last names
 fakeLastName()
+
+// Generate a typical first name and last name from an internal pre-defined list of names
+fakeFirstAndLastName()
+
+// Generate a random email address with random chars for the email id @ one of a few fixed .com domains
+fakeEmailAddress()
+
+// Generate a random IPv4 address in text format of 'xxx.xxx.xxx.xxx'
+fakeIPAddress()
 
 // Generate a typical street name from an internal pre-defined list of common street names
 fakeStreetName()
@@ -108,6 +129,10 @@ fakeCountryName()
 
 // Generate a random US-style zipcode/postcode (e.g. 10144)
 fakeZipCode()
+
+// Generate a typical company name from an internal pre-defined list of common company names
+fakeCompanyName()
+
 ```
 
 ### Masking Library
@@ -141,6 +166,7 @@ maskAlterValueFromList(currentValue, percentSameValue, otherValuesList)
 
 // Change on average a given percentage of the list members values to a random value from the provided alternative list
 maskAlterListFromList(currentList, percentSameValues, otherValuesList)
+
 ```
 
 Note, for data masking, even though the pipeline is irreversibly obfuscating fields, this doesn't mean that the masked data is useless for performing analytics to gain insight. A pipeline can mask most fields by fluctuating the original values by a small but limited random percentage (e.g. vary a credit card's expiry date or transaction amount by +/- 10%), rather than replacing them with completely random new values. In such cases, if the input data set is sufficiently large, then minor variances will be equalled out. For the fields that are only varied slightly, analysts can derive similar trends and patterns from analysing the masked data as they would the original data. See the _Mask Sensitive Fields_ chapter of the _[Practical MongoDB Aggregations](https://www.practical-mongodb-aggregations.com/)_ book for more information.

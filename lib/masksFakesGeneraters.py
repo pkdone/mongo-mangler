@@ -1,3 +1,11 @@
+# Generate a random date between a start point of millis after 01-Jan-1970 and a maximum set of milliseconds after that date
+def fakeDateMillisFromEpoch(startMillis, maxMillis):
+    return {
+        "$toDate": {"$add": [{"$dateFromString": {"dateString": "1970-01-01"}}, startMillis, {"$multiply": [{"$rand": {}}, maxMillis]}]}
+    };
+
+
+
 # Generate a random date between now and a maximum number of milliseconds from now
 def fakeDateAfterNow(maxMillisFromNow):
     return {
@@ -6,7 +14,7 @@ def fakeDateAfterNow(maxMillisFromNow):
 
 
 
-# Generate a random date between a maximum number of milliseconds before now and now
+# Generate a random date between a maximum number of milliseconds before now
 def fakeDateBeforeNow(maxMillisBeforeNow):
     return {
         "$toDate": {"$subtract": ["$$NOW", {"$multiply": [{"$rand": {}}, maxMillisBeforeNow]}]}
@@ -29,7 +37,7 @@ def fakeNumber(numberOfDigits):
 
 
 
-# Generate a while number between a given minimum and maximum number (inclusive)
+# Generate a whole number between a given minimum and maximum number (inclusive)
 def fakeNumberBounded(minNumber, maxNumber):
     return {        
         "$toLong": {"$add": [minNumber, {"$floor": {"$multiply": [{"$rand": {}}, {"$subtract": [maxNumber, minNumber]}]}}]}
@@ -72,6 +80,14 @@ def fakeDecimal():
 def fakeDecimalSignificantPlaces(maxSignificantPlaces):
     return {
         "$multiply": [{"$toDecimal": {"$rand": {}}}, {"$pow": [10, {"$min": [maxSignificantPlaces, 16]}]}]
+    };    
+
+
+
+# Generate a currency amount with just 2 decimal places and up to a specified number of significant places (e.g. '3' places -> 736.27)
+def fakeMoneyAmountDecimal(maxSignificantPlaces):
+    return {
+        "$round": [fakeDecimalSignificantPlaces(maxSignificantPlaces), 2] 
     };    
 
 
@@ -181,7 +197,7 @@ def fakeListOfSubDocs(numSumDocs, listOfValues):
 
 
 # Generate string composed of the same character repeated the specified number of times 
-def fakeNChars(char, amount):
+def fakeNSameChars(char, amount):
     return {
         "$reduce": {
             "input": {"$range": [0, amount]},
@@ -189,6 +205,24 @@ def fakeNChars(char, amount):
             "in": {"$concat": ["$$value",  char]}
         } 
     };
+
+
+
+# Generate string composed of random English alphabet uppercase characters repeated the specified number of times 
+def fakeNAnyUpperChars(amount):
+    return {
+        "$reduce": {
+            "input": {"$range": [0, amount]},
+            "initialValue": "",
+            "in": {"$concat": ["$$value",  fakeValueFromList(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"])]}
+        } 
+    };
+
+
+
+# Generate string composed of random English alphabet lowercase characters repeated the specified number of times 
+def fakeNAnyLowerChars(amount):
+    return {"$toLower": fakeNAnyUpperChars(amount)};
 
 
 
@@ -201,6 +235,24 @@ def fakeFirstName():
 # Generate a typical last name from an internal pre-defined list of common last names
 def fakeLastName():
     return fakeValueFromList(["Wang", "Zhang", "Chen", "Singh", "Kumar", "Ali", "Nguyen", "Khan", "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzales", "Jackson", "Lee", "Perez", "Thompson"]);
+
+
+
+# Generate a typical first name and last name from an internal pre-defined list of names
+def fakeFirstAndLastName():
+    return {"$concat": [fakeFirstName(), " ", fakeLastName()]};
+
+
+
+# Generate a random email address with random chars for the email id @ one of a few fixed .com domains
+def fakeEmailAddress():
+    return {"$concat": [fakeNAnyLowerChars(6), "@", fakeValueFromList(["mymail.com", "fastmail.com", "acmemail.com"])]};
+
+
+
+# Generate a random IPv4 address in text format of 'xxx.xxx.xxx.xxx'
+def fakeIPAddress():
+    return {"$concat": [{"$toString": fakeNumberBounded(0, 255)}, ".", {"$toString": fakeNumberBounded(0, 255)}, ".", {"$toString": fakeNumberBounded(0, 255)}, ".", {"$toString": fakeNumberBounded(0, 255)}]};
 
 
 
@@ -228,6 +280,12 @@ def fakeZipCode():
 
 
 
+# Generate a typical company name from an internal pre-defined list of common company names
+def fakeCompanyName():
+    return fakeValueFromList(["Wonka Industries", "Acme Corp.", "Stark Industries", "Gekko & Co", "Wayne Enterprises", "Cyberdyne Systems", "Genco Pura Olive Oil Company", "Bubba Gump", "Olivia Pope & Associates", "Krusty Krab", "Sterling Cooper", "Soylent", "Hooli", "Good Burger", "Globex Corporation", "Initech", "Umbrella Corporation", "Vehement Capital Partners", "Massive Dynamic"]);
+
+
+
 # Replace the first specified number of characters in a field's value with 'x's
 def maskReplaceFirstPart(strOrNum, amount):
     return {
@@ -243,7 +301,7 @@ def maskReplaceFirstPart(strOrNum, amount):
                         "remainder": {"$subtract": [{"$strLenCP": {"$toString": "$$text"}}, "$$amountOrZero"]},
                     },   
                     "in": {
-                        "$concat": [fakeNChars("x", {"$min": ["$$amountOrZero", "$$length"]}), {"$substrCP": ["$$text", "$$amountOrZero", {"$max": ["$$remainder", 0]}]}]                
+                        "$concat": [fakeNSameChars("x", {"$min": ["$$amountOrZero", "$$length"]}), {"$substrCP": ["$$text", "$$amountOrZero", {"$max": ["$$remainder", 0]}]}]                
                     }
                 }
             }
@@ -267,7 +325,7 @@ def maskReplaceLastPart(strOrNum, amount):
                         "remainder": {"$subtract": [{"$strLenCP": "$$text"}, "$$amountOrZero"]},
                     },   
                     "in": {
-                        "$concat": [{"$substrCP": ["$$text", 0, {"$max": ["$$remainder", 0]}]}, fakeNChars("x", {"$min": ["$$amountOrZero", "$$length"]})]                
+                        "$concat": [{"$substrCP": ["$$text", 0, {"$max": ["$$remainder", 0]}]}, fakeNSameChars("x", {"$min": ["$$amountOrZero", "$$length"]})]                
                     }
                 }
             }
@@ -278,7 +336,7 @@ def maskReplaceLastPart(strOrNum, amount):
 
 # Replace all the characters in a field's value with 'x's
 def maskReplaceAll(strOrNum):
-    return fakeNChars("x", {"$strLenCP": {"$toString": strOrNum}})
+    return fakeNSameChars("x", {"$strLenCP": {"$toString": strOrNum}})
 
 
 

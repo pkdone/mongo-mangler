@@ -1,4 +1,7 @@
 ```javascript
+// Generate a random date between a start point of millis after 01-Jan-1970 and a maximum set of milliseconds after that date
+fakeDateMillisFromEpoch(startMillis, maxMillis)
+
 // Generate a random date between now and a maximum number of milliseconds from now
 fakeDateAfterNow(maxMillisFromNow)
 
@@ -20,6 +23,9 @@ fakeDecimal()
 // Generate a decimal number with up to a specified number of significant places (e.g. '3' places -> 736.274473638742)
 fakeDecimalSignificantPlaces(maxSignificantPlaces)
 
+// Generate a currency amount with just 2 decimal places and up to a specified number of significant places (e.g. '3' places -> 736.27)
+fakeMoneyAmountDecimal(maxSignificantPlaces)
+
 // Generate a True or False value randomly
 fakeBoolean()
 
@@ -36,13 +42,28 @@ fakeValueFromListWeighted(listOfValues)
 fakeListOfSubDocs(numSumDocs, listOfValues)
 
 // Generate string composed of the same character repeated the specified number of times 
-fakeNChars(char, amount)
+fakeNSameChars(char, amount)
+
+// Generate string composed of random English alphabet uppercase characters repeated the specified number of times 
+fakeNAnyUpperChars(amount)
+
+// Generate string composed of random English alphabet lowercase characters repeated the specified number of times 
+fakeNAnyLowerChars(amount)
 
 // Generate a typical first name from an internal pre-defined list of common first names
 fakeFirstName()
 
 // Generate a typical last name from an internal pre-defined list of common last names
 fakeLastName()
+
+// Generate a typical first name and last name from an internal pre-defined list of names
+fakeFirstAndLastName()
+
+// Generate a random email address with random chars for the email id @ one of a few fixed .com domains
+fakeEmailAddress()
+
+// Generate a random IPv4 address in text format of 'xxx.xxx.xxx.xxx'
+fakeIPAddress()
 
 // Generate a typical street name from an internal pre-defined list of common street names
 fakeStreetName()
@@ -55,6 +76,9 @@ fakeCountryName()
 
 // Generate a random US-style zipcode/postcode (e.g. 10144)
 fakeZipCode()
+
+// Generate a typical company name from an internal pre-defined list of common company names
+fakeCompanyName()
 
 // Replace the first specified number of characters in a field's value with 'x's
 maskReplaceFirstPart(strOrNum, amount)
