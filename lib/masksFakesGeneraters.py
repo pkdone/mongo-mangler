@@ -45,7 +45,7 @@ def fakeNumberBounded(minNumber, maxNumber):
 
 
 
-# Generate a text representation of whole number to a specific number of digits (characters) in length
+# Generate a text representation of whole number to a specific number of digits (characters) in length (max 30)
 def fakePaddedNumberAsText(numberOfDigits):
     return {
         "$let": {
@@ -245,8 +245,8 @@ def fakeFirstAndLastName():
 
 
 # Generate a random email address with random chars for the email id @ one of a few fixed .com domains
-def fakeEmailAddress():
-    return {"$concat": [fakeNAnyLowerChars(6), "@", fakeValueFromList(["mymail.com", "fastmail.com", "acmemail.com"])]};
+def fakeEmailAddress(idChars):
+    return {"$concat": [fakeNAnyLowerChars(idChars), "@", fakeValueFromList(["mymail.com", "fastmail.com", "acmemail.com"])]};
 
 
 
