@@ -116,6 +116,18 @@ def fakeBooleanWeighted(targetAvgPercentTrue):
 
 
 
+# Return the first value on avererage the specified percentage of invocations otherwise returning second value
+def fakeOneOfTwoValuesWeighted(firstVal, secondVal, avgPercentFirstVal):
+    return {
+        "$cond": {
+            "if":   {"$lte": [{"$rand": {}}, {"$divide": [avgPercentFirstVal, 100]}]},
+            "then": firstVal,
+            "else": secondVal,
+        }
+    };    
+
+
+
 # Randomly return one value from a provided list
 def fakeValueFromList(listOfValues):
     return {

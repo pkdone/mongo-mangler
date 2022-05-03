@@ -67,7 +67,7 @@ fakeNumber(numberOfDigits)
 // Generate a whole number between a given minimum and maximum number (inclusive)
 fakeNumberBounded(minNumber, maxNumber)
 
-// Generate a text representation of whole number to a specific number of digits (characters) in length
+// Generate a text representation of whole number to a specific number of digits (characters) in length (max 30)
 fakePaddedNumberAsText(numberOfDigits)
 
 // Generate a decimal number between 0.0 and 1.0 with up to 16 decimal places
@@ -84,6 +84,9 @@ fakeBoolean()
 
 // Generate a True or False value randomly but where True is likely for a specified percentage of invocations (e.g. 40 -> 40% likely to be True)
 fakeBooleanWeighted(targetAvgPercentTrue)
+
+// Return the first value on avererage the specified percentage of invocations otherwise returning second value
+fakeOneOfTwoValuesWeighted(firstVal, secondVal, avgPercentFirstVal)
 
 // Randomly return one value from a provided list
 fakeValueFromList(listOfValues)
@@ -113,7 +116,7 @@ fakeLastName()
 fakeFirstAndLastName()
 
 // Generate a random email address with random chars for the email id @ one of a few fixed .com domains
-fakeEmailAddress()
+fakeEmailAddress(idChars)
 
 // Generate a random IPv4 address in text format of 'xxx.xxx.xxx.xxx'
 fakeIPAddress()

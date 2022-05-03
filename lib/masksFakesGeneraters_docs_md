@@ -32,6 +32,9 @@ fakeBoolean()
 // Generate a True or False value randomly but where True is likely for a specified percentage of invocations (e.g. 40 -> 40% likely to be True)
 fakeBooleanWeighted(targetAvgPercentTrue)
 
+// Return the first value on avererage the specified percentage of invocations otherwise returning second value
+fakeOneOfTwoValuesWeighted(firstVal, secondVal, avgPercentFirstVal)
+
 // Randomly return one value from a provided list
 fakeValueFromList(listOfValues)
 
