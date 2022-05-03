@@ -177,6 +177,7 @@ def run(url, srcDbName, srcCollName, tgtDbName, tgtCollName, size, compression, 
     print(f"Finished database processing work in {int((end-start).total_seconds())} seconds "
           f"({datetime.now().strftime(DATE_TIME_FORMAT)})\n")
     print(f"\nNow going to gather & print some summary data + remove old temporary collections\n")
+    print(f"\n (for large collections may take a while due to a full coll scan count operation)\n")
     printSummary(srcDb, tgtDb, srcCollName, tgtCollName, compression)
 
     # Clean-up any temporary collections that are no longer needed
