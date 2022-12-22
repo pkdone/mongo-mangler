@@ -136,7 +136,7 @@ fakeZipCode()
 // Generate a typical company name from an internal pre-defined list of common company names
 fakeCompanyName()
 
-// Generate a random place with typical name, an id and some geo coordinates
+// Generate a random place with a typical name, an id and some geo coordinates
 fakeLocationWithCoordinates()
 
 ```

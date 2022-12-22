@@ -300,7 +300,7 @@ def fakeCompanyName():
 
 
 
-# Generate a random place with typical name, an id and some geo coordinates
+# Generate a random place with a typical name, an id and some geo coordinates
 def fakeLocationWithCoordinates():
     return fakeValueFromList([
         {"name": "Zoo Station", "id": "327833622", "location": {"type": "Point", "coordinates": [-0.1, 51.5]}},
