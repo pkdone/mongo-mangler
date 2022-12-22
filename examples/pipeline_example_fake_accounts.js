@@ -17,6 +17,7 @@ pipeline = [
         "address.town": fakeTownName(),                                                        // Random town name         
         "address.country": fakeCountryName(),                                                  // Random country name
         "address.zipcode": fakeZipCode(),                                                      // Random zip code
+        "safe_location": fakeLocationWithCoordinates(),                                        // Random place with name, id and geo coordinates
         "records": fakeListOfSubDocs(4, ["BLUE", "RED", "GREEN", "PURPLE", "ORANGE", "PINK"]), // Array of 4 random subdocuments
     }},
 ]

@@ -15,17 +15,17 @@ with open(f"{LIBFILE}.js", mode="r") as jsFile, \
     jsContent = jsFile.read()
 
     # Substitute JS-specific parts of code with Python equivalents and output to .py file
-    pythonContent = jsContent
-    pythonContent = re.sub(r"^ *function", "def", pythonContent, flags=re.M)  # 'function'->'def'
-    pythonContent = re.sub(r"\) *{ *$", "):", pythonContent, flags=re.M)  # remove brace after func
-    pythonContent = re.sub(r"^} *$", "", pythonContent, flags=re.M)  # remove closing func brace
-    pythonContent = re.sub(r"true", "True", pythonContent, flags=re.M)  # convert js to py bool
-    pythonContent = re.sub(r"false", "False", pythonContent, flags=re.M)  # convert js to py bool
-    pythonContent = re.sub(r"null", "None", pythonContent, flags=re.M)  # convert js null to py
-    pythonContent = re.sub("/\\*.*?\\*/", "", pythonContent, flags=re.DOTALL)  # remove  cmnts
-    pythonContent = re.sub(r"^//", "#", pythonContent, flags=re.M)  # replace js start cmt with py
-    pythonContent = re.sub(r"//.*?\n", "\n", pythonContent, flags=re.M)  # remove other js cmnts
-    pyFile.write(pythonContent)
+    python_content = jsContent
+    python_content = re.sub(r"^ *function", "def", python_content, flags=re.M)  # 'function'->'def'
+    python_content = re.sub(r"\) *{ *$", "):", python_content, flags=re.M)  # rmve brace after func
+    python_content = re.sub(r"^} *$", "", python_content, flags=re.M)  # remove closing func brace
+    python_content = re.sub(r"/\*.*?\*/", "", python_content, flags=re.DOTALL)  # remove blkcmts
+    python_content = re.sub(r"^//", "#", python_content, flags=re.M)  # convert js start cmt to py
+    python_content = re.sub(r"//[^\n]*", "\n", python_content, flags=re.M)  # remove other js cmnts
+    python_content = python_content.replace("true", "True")  # convert js to py bool
+    python_content = python_content.replace(r"false", "False")  # convert js to py bool
+    python_content = python_content.replace(r"null", "None")  # convert js null to py
+    pyFile.write(python_content)
     print(f"Generated new file: '{pyFile.name}'")
 
     # Generate a text file which names the imports of the fake and mask functions
@@ -57,7 +57,7 @@ with open(f"{LIBFILE}.js", mode="r") as jsFile, \
 
     docsContent = re.sub(r"\).*{.*$", ")", docsContent, flags=re.M)  # remove brace after func
     docsContent = re.sub(r"^ *function *", "", docsContent, flags=re.M)  # remove 'function'
-    pythonContent = re.sub("/\\*.*?\\*/", "", pythonContent, flags=re.DOTALL)  # remove block cmnts
+    python_content = re.sub("/\\*.*?\\*/", "", python_content, flags=re.DOTALL)  # rmve block cmnts
     docsFile.write("```javascript\n")
     docsFile.write(docsContent)
     docsFile.write("```\n")

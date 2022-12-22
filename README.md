@@ -6,7 +6,7 @@ The _mongo-mangler_ tool is a lightweight Python utility, which you can run from
 * __Data Faking__. Generate a large set of documents from scratch, populating the fields of each document with randomly generated values according to a set of rules. For example, create a massive collection of documents representing fictitious customers with randomly generated personal details, ready to be used in a performance benchmark test.
 * __Data Masking__. Transform the contents of a set of documents into a new collection of similar documents but with some fields obfuscated. For example, mask every customer record's surname and birth date with the original values partly redacted and randomly adjusted, respectively, ready for the data set to be distributed to a 3rd party.
 
-The _mongo-mangler_ tool allows you to optionally provide a custom MongoDB aggregation pipeline. In the pipeline, you can define whatever data transformation logic you want. This project also provides a convenient library of functions representing common data faking and masking tasks which you can easily re-use from your custom pipeline.
+The _mongo-mangler_ tool allows you to optionally provide a custom MongoDB aggregation pipeline. In the pipeline, you can define whatever data transformation logic you want. This project also provides a convenient library of functions representing common data faking and masking tasks which you can easily reuse from your custom pipeline.
 
 
 ## Performance
@@ -241,6 +241,15 @@ To use the [example masking aggregation pipeline](examples/pipeline_example_mask
 _NOTE 1_: Before running the above command, first change the URL's _username_, _password_, and _hostname_, to match the URL of your running MongoDB cluster, and if using a different source collection of real data, change the values for the source database and collection names.
 
 _NOTE 2_: You can of course construct your own pipeline containing whatever aggregation stages and operators you want and using whichever of the supplied masking library functions you require - in the above command change the name of the pipeline to reference the pipeline you've created. 
+
+
+### Including An Extra Automatically Generated Monotonically Incrementing Unique Value Field
+                                
+The _mongo-mangler_ tool can be invoked with an additional argument naming an extra field to be injected into each output document. The value of this field will be an automatically generated monotonically incrementing unique number. This only works if running on MongoDB version 5.0 and greater and the argument will be ignored for earlier versions of MongoDB. Use of this argument will slow the ingestion time by about 20%. The argument is `--incrfield` (or `-i`) and takes the name of the new field you require. For example: 
+
+```console
+-i 'newId'
+```
 
 
 ## Prototyping Your Custom Faked/Masked Aggregation Pipelines

@@ -168,6 +168,7 @@ def fakeValueFromListWeighted(listOfValues):
                     },   
                     "in": {
                         "$getField": {"field": "result", "input": {  
+
                             "$reduce": {
                                 "input": {"$range": [0, {"$size": "$$values"}]},
                                 "initialValue": {
@@ -201,6 +202,7 @@ def fakeListOfSubDocs(numSumDocs, listOfValues):
             "input": {"$range": [0, numSumDocs]},
             "in": {
                 
+
                 "$ifNull": ["$DUMMY", fakeValueFromList(listOfValues)],
             }
         }
@@ -295,6 +297,23 @@ def fakeZipCode():
 # Generate a typical company name from an internal pre-defined list of common company names
 def fakeCompanyName():
     return fakeValueFromList(["Wonka Industries", "Acme Corp.", "Stark Industries", "Gekko & Co", "Wayne Enterprises", "Cyberdyne Systems", "Genco Pura Olive Oil Company", "Bubba Gump", "Olivia Pope & Associates", "Krusty Krab", "Sterling Cooper", "Soylent", "Hooli", "Good Burger", "Globex Corporation", "Initech", "Umbrella Corporation", "Vehement Capital Partners", "Massive Dynamic"]);
+
+
+
+# Generate a random place with typical name, an id and some geo coordinates
+def fakeLocationWithCoordinates():
+    return fakeValueFromList([
+        {"name": "Zoo Station", "id": "327833622", "location": {"type": "Point", "coordinates": [-0.1, 51.5]}},
+        {"name": "Shelter Place", "id": "264329372", "location": {"type": "Point", "coordinates": [-73.99, 40.7]}},
+        {"name": "Happy Church", "id": "726383926", "location": {"type": "Point", "coordinates": [103.8, 1.33]}},
+        {"name": "Tiny Tower", "id": "918273645", "location": {"type": "Point", "coordinates": [151.2, -33.9]}},
+        {"name": "Cosy Cavern", "id": "136272621", "location": {"type": "Point", "coordinates": [-51.75, 64.17]}},
+        {"name": "Warm Temple", "id": "826473826", "location": {"type": "Point", "coordinates": [-66, -54.9]}},
+        {"name": "Peace Corner", "id": "448172639", "location": {"type": "Point", "coordinates": [-7, 62.2]}},
+        {"name": "Grassy Cove", "id": "371927611", "location": {"type": "Point", "coordinates": [-5.2, 50]}},
+        {"name": "Sub Sanctuary", "id": "484728162", "location": {"type": "Point", "coordinates": [-1.79, 53.3]}},
+        {"name": "High Hill", "id": "338817262", "location": {"type": "Point", "coordinates": [-3.27, 53.15]}},
+    ]);
 
 
 

@@ -1,5 +1,9 @@
-# Notes file
+# Custom stuff
 NOTES.txt
+.DS_Store
+.vscode
+play.mongodb
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

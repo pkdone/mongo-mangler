@@ -18,19 +18,20 @@ MASK_AGG_FILE = "pipeline_example_mask_accounts.js"
 ##
 # Get JavaScript pipeline and transform to content that will work in Python
 ##
-def getPipelineFromPyAggFile(dataFilename):
-    importsFilename = "../lib/masksFakesGeneraters_py_imports.py"
-    with open(dataFilename, mode="r") as dataFile, open(importsFilename, mode="r") as importsFile:
-        pythonContent = dataFile.read()
-        pythonContent = re.sub("/\\*.*?\\*/", "", pythonContent, flags=re.DOTALL)  # remove blkcmts
-        pythonContent = re.sub(r"//.*?\n", "\n", pythonContent, flags=re.M)  # remove other js cmnts
-        pythonContent = re.sub(r"true", "True", pythonContent, flags=re.M)  # convert to py bool
-        pythonContent = re.sub(r"false", "False", pythonContent, flags=re.M)  # convert py bool
-        pythonContent = re.sub(r"null", "None", pythonContent, flags=re.M)  # convert js null to py
-        pipelineCode = importsFile.read() + "\nglobal pipeline;\n" + pythonContent
+def get_pipeline_from_py_agg_file(data_filename):
+    imports_filename = "../lib/masksFakesGeneraters_py_imports.py"
+    
+    with open(data_filename, mode="r") as dataFile, open(imports_filename, mode="r") as importsFile:
+        python_content = dataFile.read()
+        python_content = re.sub(r"/\*.*?\*/", "", python_content, flags=re.DOTALL)  # remove blkcmts
+        python_content = re.sub(r"//[^\n]*", "\n", python_content, flags=re.M)  # remove line cmnts
+        python_content = python_content.replace("true", "True")  # convert js to py bool
+        python_content = python_content.replace(r"false", "False")  # convert js to py bool
+        python_content = python_content.replace(r"null", "None")  # convert js null to py
+        pipeline_code = importsFile.read() + "\nglobal pipeline;\n" + python_content
         # pprint(pipelineCode)
-        pipelineCompiledCode = compile(pipelineCode, "pipeline", "exec")
-        exec(pipelineCompiledCode)
+        pipeline_compiled_code = compile(pipeline_code, "pipeline", "exec")
+        exec(pipeline_compiled_code)
         return pipeline
 
 
@@ -42,7 +43,8 @@ if DO_FAKE_RATHER_THAN_MASK and (coll.count_documents({}) <= 0):
     coll.insert_one({})
     coll.insert_one({})
 
-pipeline = getPipelineFromPyAggFile(FAKE_AGG_FILE if DO_FAKE_RATHER_THAN_MASK else MASK_AGG_FILE)
+pipeline = get_pipeline_from_py_agg_file(FAKE_AGG_FILE if DO_FAKE_RATHER_THAN_MASK
+                                         else MASK_AGG_FILE)
 # pprint(pipeline)
 
 for record in coll.aggregate(pipeline):
